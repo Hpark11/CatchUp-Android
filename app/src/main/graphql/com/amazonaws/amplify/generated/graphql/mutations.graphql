@@ -1,0 +1,157 @@
+# this is an auto generated file. This will be overwritten
+mutation ChargeCredit($id: ID!, $credit: Int) {
+  chargeCredit(id: $id, credit: $credit) {
+    id
+    email
+    nickname
+    profileImagePath
+    gender
+    birthday
+    ageRange
+    credit
+  }
+}
+mutation UseCredit($id: ID!) {
+  useCredit(id: $id) {
+    id
+    email
+    nickname
+    profileImagePath
+    gender
+    birthday
+    ageRange
+    credit
+  }
+}
+mutation UpdateCatchUpUser($id: ID!, $data: CatchUpUserInput) {
+  updateCatchUpUser(id: $id, data: $data) {
+    id
+    email
+    nickname
+    profileImagePath
+    gender
+    birthday
+    ageRange
+    credit
+  }
+}
+mutation CreateCatchUpUser($id: ID!, $data: CatchUpUserInput) {
+  createCatchUpUser(id: $id, data: $data) {
+    id
+    email
+    nickname
+    profileImagePath
+    gender
+    birthday
+    ageRange
+    credit
+  }
+}
+mutation DeleteCatchUpUser($id: ID!) {
+  deleteCatchUpUser(id: $id) {
+    id
+    email
+    nickname
+    profileImagePath
+    gender
+    birthday
+    ageRange
+    credit
+  }
+}
+mutation CreateCatchUpContact($contact: ContactInput!) {
+  createCatchUpContact(contact: $contact) {
+    phone
+    nickname
+    profileImagePath
+    latitude
+    longitude
+    pushToken
+    osType
+  }
+}
+mutation BatchCreateCatchUpContact($contacts: [ContactInput]) {
+  batchCreateCatchUpContact(contacts: $contacts) {
+    phone
+    nickname
+    profileImagePath
+    latitude
+    longitude
+    pushToken
+    osType
+  }
+}
+mutation RelocateCatchUpContact(
+  $phone: ID!
+  $latitude: Float!
+  $longitude: Float!
+) {
+  relocateCatchUpContact(
+    phone: $phone
+    latitude: $latitude
+    longitude: $longitude
+  ) {
+    phone
+    nickname
+    profileImagePath
+    latitude
+    longitude
+    pushToken
+    osType
+  }
+}
+mutation AttachTokenToCatchUpContact(
+  $phone: ID!
+  $pushToken: String!
+  $osType: String!
+) {
+  attachTokenToCatchUpContact(
+    phone: $phone
+    pushToken: $pushToken
+    osType: $osType
+  ) {
+    phone
+    nickname
+    profileImagePath
+    latitude
+    longitude
+    pushToken
+    osType
+  }
+}
+mutation CreateCatchUpPromise($data: CatchUpPromiseInput) {
+  createCatchUpPromise(data: $data) {
+    id
+    owner
+    dateTime
+    address
+    latitude
+    longitude
+    name
+    contacts
+  }
+}
+mutation UpdateCatchUpPromise($id: ID!, $data: CatchUpPromiseInput) {
+  updateCatchUpPromise(id: $id, data: $data) {
+    id
+    owner
+    dateTime
+    address
+    latitude
+    longitude
+    name
+    contacts
+  }
+}
+mutation DeleteCatchUpPromise($id: ID!) {
+  deleteCatchUpPromise(id: $id) {
+    id
+    owner
+    dateTime
+    address
+    latitude
+    longitude
+    name
+    contacts
+  }
+}

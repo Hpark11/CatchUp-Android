@@ -1,0 +1,17 @@
+projects:
+  CatchUp App:
+    schemaPath: app/src/main/graphql/schema.json
+    includes:
+      - app/src/main/graphql/**/*.graphql
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        graphQLApiId: 6jfnnifpgvev7k3xkflqrwdtoq
+        codeGenTarget: ''
+        generatedFileName: ''
+        docsFilePath: app/src/main/graphql/com/amazonaws/amplify/generated/graphql
+        region: ap-northeast-2
+      endpoints:
+        prod: >-
+          https://f3auk6pacreq7fpn7wpky2rvhm.appsync-api.ap-northeast-2.amazonaws.com/graphql
