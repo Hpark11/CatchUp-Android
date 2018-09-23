@@ -1,20 +1,27 @@
 package blackburn.io.catchup.ui
 
+import android.arch.lifecycle.ViewModelProvider
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.amazonaws.mobile.config.AWSConfiguration
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient
 import android.util.Log
 import blackburn.io.catchup.R
+import blackburn.io.catchup.app.BaseActivity
+import com.amazonaws.amplify.generated.graphql.CheckAppVersionQuery
 import com.amazonaws.amplify.generated.graphql.ListCatchUpUserQuery
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers
 import com.apollographql.apollo.GraphQLCall
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.exception.ApolloException
+import javax.inject.Inject
 
-class MainActivity: AppCompatActivity() {
+class MainActivity: BaseActivity() {
 
   private var mAWSAppSyncClient: AWSAppSyncClient? = null
+
+  @Inject
+  lateinit var viewModelFactory: ViewModelProvider.Factory
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -29,6 +36,7 @@ class MainActivity: AppCompatActivity() {
   }
 
   fun query() {
+
     mAWSAppSyncClient?.query(ListCatchUpUserQuery.builder().count(5).build())
       ?.responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
       ?.enqueue(todosCallback)

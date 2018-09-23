@@ -1,3 +1,40 @@
 <resources>
     <string name="app_name">CatchUp</string>
+
+    <string name="kakao_app_key">dccae63cb73bd8096d09826d2e0ce581</string>
+    <string name="kakao_scheme">kakaodccae63cb73bd8096d09826d2e0ce581</string>
+    <string name="kakaolink_host">kakaolink</string>
+
+    <string name="search_address">주소 찾기</string>
+    <string name="search_address_confirm">확인</string>
+
+    <string name="user_select_confirm">확인</string>
+    <string name="title_activity_user_select">구성원</string>
+
+    <string name="new_promise_confirm">확인</string>
+
+    <string name="promise_name_set_confirm">확인</string>
+
+    <string name="confirm">확인</string>
+    <string name="cancel">취소</string>
+
+    <string name="dialog_title_notify_promise">약속 공지하기</string>
+    <string name="dialog_content_notify_promise">생성된 약속을 카카오톡으로 공지하시겠습니까?</string>
+    <string name="dialog_notify_promise_by_kakao">카카오톡으로 공지</string>
+    <string name="dialog_notify_promise_by_sms">문자로 공지</string>
+    <string name="dialog_notify_promise_by_neither">공지하지 않는다</string>
+
+    <string name="search_view_hint">이름으로 검색</string>
+
+    <string name="permission_title">동의해주세요</string>
+    <string name="permission_deny_message">동의없이는 이 서비스를 이용할 수 없어요 ㅠㅠ [설정] > [어플리케이션 권한]에서 해당 권한을 켜주세요</string>
+
+    <string name="promise_input_name">약속명</string>
+    <string name="promise_input_date">언제</string>
+    <string name="promise_input_time">몇시</string>
+    <string name="promise_input_address">어디서</string>
+    <string name="promise_input_members">누구랑</string>
+
+    <string name="promise_confirm_title_add">약속 추가 완료</string>
+    <string name="promise_confirm_title_edit">약속 수정 완료</string>
 </resources>
