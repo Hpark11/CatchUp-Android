@@ -1,13 +1,15 @@
 package blackburn.io.catchup.di.module
 
-import android.app.Application
 import android.content.Context
+import blackburn.io.catchup.app.App
 import blackburn.io.catchup.di.scope.AppScope
 import blackburn.io.catchup.service.SchedulerUtil
 import dagger.Module
 import dagger.Provides
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Named
+
 
 @Module(includes = [APIClientModule::class])
 class AppModule {
@@ -17,6 +19,7 @@ class AppModule {
   fun provideSchedulers() = SchedulerUtil(Schedulers.io(), AndroidSchedulers.mainThread())
 
   @Provides
+  @Named("applicationContext")
   @AppScope
-  fun provideContext(app: Application): Context = app
+  fun provideContext(app: App): Context = app.applicationContext
 }

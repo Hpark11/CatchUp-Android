@@ -1,5 +1,6 @@
 package blackburn.io.catchup.service
 
+import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.di.scope.AppScope
 import com.amazonaws.amplify.generated.graphql.CheckAppVersionQuery
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient
@@ -11,6 +12,7 @@ import com.apollographql.apollo.api.Query
 import com.apollographql.apollo.api.Response
 import com.apollographql.apollo.api.Subscription
 import com.apollographql.apollo.exception.ApolloException
+import com.apollographql.apollo.fetcher.ResponseFetcher
 import com.apollographql.apollo.internal.util.Cancelable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -25,11 +27,12 @@ import io.reactivex.BackpressureStrategy
 class DataService @Inject constructor(private val client: AWSAppSyncClient) {
 
   private fun <D : Operation.Data, T, V : Operation.Variables> from(
-    @NotNull query: Query<D, T, V>
+    @NotNull query: Query<D, T, V>,
+    fetcher: ResponseFetcher = AppSyncResponseFetchers.CACHE_AND_NETWORK
   ): Observable<Response<T>> {
 
     return Observable.create { emitter ->
-      val call = client.query(query).responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
+      val call = client.query(query).responseFetcher(fetcher)
       cancelOnDisposed(emitter, call)
 
       call.enqueue(object : GraphQLCall.Callback<T>() {
@@ -97,7 +100,7 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
   }
 
   fun requestAppVersion(): Observable<Response<CheckAppVersionQuery.Data>> {
-    return from(CheckAppVersionQuery.builder().build())
+    return from(CheckAppVersionQuery.builder().platform(Define.PLATFORM_ANDROID).build(), AppSyncResponseFetchers.NETWORK_ONLY)
   }
 }
 
