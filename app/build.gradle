@@ -35,8 +35,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation 'com.amazonaws:aws-android-sdk-appsync:2.6.25'
-
-
     implementation "android.arch.lifecycle:extensions:1.1.1"
 
     //rxjava
@@ -62,4 +60,7 @@ dependencies {
     // kakao sign in sdk
     implementation group: 'com.kakao.sdk', name: 'usermgmt', version: project.KAKAO_SDK_VERSION
     implementation group: 'com.kakao.sdk', name: 'kakaolink', version: project.KAKAO_SDK_VERSION
+
+    // Permission
+    implementation 'gun0912.ted:tedpermission-rx2:2.2.2'
 }

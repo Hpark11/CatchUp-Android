@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="90dp"
+        android:layout_marginTop="72dp"
         android:text="@string/permission_title"
         android:textColor="@color/slate"
         android:textSize="17sp"
@@ -39,6 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginBottom="14dp"
             android:layout_gravity="left">
 
             <ImageView
@@ -58,17 +59,18 @@
         </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="모임 약속 두시간 전부터 친구들의 위치를 서로 파악하기 위해 필요해요 \n(약속 시간이 2시간 미만인 경우에는 위치정보를 조회하지 않아요) "
             android:textColor="@color/steel"
             android:textSize="14sp"
-            android:layout_marginBottom="34dp"/>
+            android:layout_marginBottom="24dp"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginBottom="14dp"
             android:layout_gravity="left">
 
             <ImageView
@@ -88,17 +90,18 @@
         </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="친구들과의 모임 약속을 만들어 활용하기 위해 저장되어있는 그들의 연락처들이 필요해요"
             android:textColor="@color/steel"
             android:textSize="14sp"
-            android:layout_marginBottom="34dp"/>
+            android:layout_marginBottom="24dp"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginBottom="14dp"
             android:layout_gravity="left">
 
             <ImageView
@@ -118,7 +121,7 @@
         </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="친구들이 나를 알아보고 약속모임을 만들 수 있게 내 전화번호가 필요해요"
             android:textColor="@color/steel"

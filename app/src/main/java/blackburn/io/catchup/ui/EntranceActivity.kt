@@ -4,6 +4,7 @@ import android.Manifest
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -46,12 +47,12 @@ class EntranceActivity: BaseActivity() {
         }
 
         if (!isNecessaryPermissionsGranted) {
-
+          startActivity(Intent(this@EntranceActivity, PermissionsActivity::class.java))
+        } else {
+          startActivity(Intent(this@EntranceActivity, MainActivity::class.java))
         }
       }
     })
-
-
   }
 
   private val isNecessaryPermissionsGranted
