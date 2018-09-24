@@ -10,6 +10,7 @@ import com.tedpark.tedpermission.rx2.TedRx2Permission
 import kotlinx.android.synthetic.main.activity_permissions.*
 
 class PermissionsActivity: BaseWithoutDIActivity() {
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_permissions)
@@ -25,15 +26,10 @@ class PermissionsActivity: BaseWithoutDIActivity() {
         ).request()
     }.subscribe({ result ->
       if (result.isGranted) {
-        setResult(RESULT_CODE_PERMISSION_GRANTED)
         finish()
       }
     }, { throwable ->
       throwable.printStackTrace()
     })
-  }
-
-  companion object {
-    val RESULT_CODE_PERMISSION_GRANTED = 9999
   }
 }

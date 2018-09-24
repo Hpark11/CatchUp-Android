@@ -1,6 +1,7 @@
 package blackburn.io.catchup.ui
 
 import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.amazonaws.mobile.config.AWSConfiguration
@@ -18,37 +19,15 @@ import javax.inject.Inject
 
 class MainActivity: BaseActivity() {
 
-  private var mAWSAppSyncClient: AWSAppSyncClient? = null
-
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
+
+  private lateinit var viewModel: MainViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    mAWSAppSyncClient = AWSAppSyncClient.builder()
-      .context(applicationContext)
-      .awsConfiguration(AWSConfiguration(applicationContext))
-      .build()
-
-    query()
-  }
-
-  fun query() {
-
-    mAWSAppSyncClient?.query(ListCatchUpUserQuery.builder().count(5).build())
-      ?.responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
-      ?.enqueue(todosCallback)
-  }
-
-  private val todosCallback = object : GraphQLCall.Callback<ListCatchUpUserQuery.Data>() {
-    override fun onResponse(response: Response<ListCatchUpUserQuery.Data>) {
-      Log.i("Results", response.data()?.listCatchUpUser()?.users()?.toString())
-    }
-
-    override fun onFailure(e: ApolloException) {
-      Log.e("ERROR", e.toString())
-    }
+    viewModel = ViewModelProviders.of(this, viewModelFactory)[MainViewModel::class.java]
   }
 }

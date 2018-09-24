@@ -22,6 +22,7 @@ class EntranceViewModel @Inject constructor(
 
   // Output
   val appVersion: MutableLiveData<AppVersion> = MutableLiveData()
+  val initDoneWithPhone: MutableLiveData<String> = MutableLiveData()
 
   // Input
 

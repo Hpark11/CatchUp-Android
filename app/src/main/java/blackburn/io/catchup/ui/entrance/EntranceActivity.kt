@@ -15,6 +15,7 @@ import android.util.Log
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseActivity
 import blackburn.io.catchup.app.Define
+import blackburn.io.catchup.ui.MainActivity
 import com.google.firebase.iid.FirebaseInstanceId
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
@@ -69,10 +70,7 @@ class EntranceActivity: BaseActivity() {
     viewModel.checkAppVersion()
 
     if (!isNecessaryPermissionsGranted) {
-      startActivityForResult(
-        Intent(this@EntranceActivity, PermissionsActivity::class.java),
-        100
-      )
+      startActivity(Intent(this@EntranceActivity, PermissionsActivity::class.java))
     }
   }
 
@@ -90,6 +88,14 @@ class EntranceActivity: BaseActivity() {
         if (version.revision > Define.VERSION_REVISION) {
 
         }
+      }
+    })
+
+    viewModel.initDoneWithPhone.observe(this, Observer {
+      it?.let { phone ->
+        val intent = Intent(this@EntranceActivity, MainActivity::class.java)
+        intent.putExtra("phone", phone)
+        startActivity(intent)
       }
     })
   }
