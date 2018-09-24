@@ -9,10 +9,12 @@ import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.util.Base64
 import android.util.Log
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseActivity
 import blackburn.io.catchup.app.Define
+import blackburn.io.catchup.service.app.DataService
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.network.ErrorResult
@@ -21,9 +23,14 @@ import com.kakao.usermgmt.callback.MeV2ResponseCallback
 import com.kakao.usermgmt.response.MeV2Response
 import com.kakao.util.exception.KakaoException
 import com.kakao.util.helper.log.Logger
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import javax.inject.Inject
 
 class EntranceActivity: BaseActivity() {
+
+  @Inject
+  lateinit var dataService: DataService
 
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -48,6 +55,24 @@ class EntranceActivity: BaseActivity() {
     sessionCallback = SessionCallback()
     Session.getCurrentSession().addCallback(sessionCallback)
     Session.getCurrentSession().checkAndImplicitOpen()
+
+    if (dataService == null) {
+      val b = 2
+    }
+
+    try {
+      val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+
+      for (signature in info.signatures) {
+        val md = MessageDigest.getInstance("SHA")
+        md.update(signature.toByteArray())
+        Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT))
+      }
+    } catch (e: PackageManager.NameNotFoundException) {
+      e.printStackTrace()
+    } catch (e: NoSuchAlgorithmException) {
+      e.printStackTrace()
+    }
 
     viewModel.checkAppVersion()
   }
@@ -123,7 +148,7 @@ class EntranceActivity: BaseActivity() {
           if (!isNecessaryPermissionsGranted) {
             isSignInDone = true
           } else {
-
+            startActivity(Intent(this@EntranceActivity, MainActivity::class.java))
           }
         }
       })

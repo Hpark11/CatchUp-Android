@@ -4,6 +4,7 @@ import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.di.scope.AppScope
 import com.amazonaws.amplify.generated.graphql.AttachTokenToCatchUpContactMutation
 import com.amazonaws.amplify.generated.graphql.CheckAppVersionQuery
+import com.amazonaws.amplify.generated.graphql.UpdateCatchUpContactMutation
 import com.amazonaws.amplify.generated.graphql.UpdateCatchUpUserMutation
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient
 import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall
@@ -21,6 +22,7 @@ import io.reactivex.FlowableEmitter
 import io.reactivex.Flowable
 import io.reactivex.BackpressureStrategy
 import type.CatchUpUserInput
+import type.ContactUpdateInput
 
 @AppScope
 class DataService @Inject constructor(private val client: AWSAppSyncClient) {
@@ -138,6 +140,23 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
           .credit(credit)
           .build())
         .build())
+  }
+
+  fun updateContact(
+    phone: String,
+    nickname: String?,
+    profileImagePath: String?,
+    pushToken: String?,
+    osType: String?
+  ): Observable<Response<UpdateCatchUpContactMutation.Data>> {
+    return from(UpdateCatchUpContactMutation.builder().phone(phone).contact(
+      ContactUpdateInput.builder()
+        .nickname(nickname)
+        .profileImagePath(profileImagePath)
+        .osType(osType)
+        .pushToken(pushToken)
+        .build())
+      .build())
   }
 
   fun attachToken(

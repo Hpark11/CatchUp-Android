@@ -63,4 +63,9 @@ dependencies {
 
     // Permission
     implementation 'gun0912.ted:tedpermission-rx2:2.2.2'
+
+    implementation 'com.google.firebase:firebase-core:16.0.3'
+    implementation 'com.google.firebase:firebase-messaging:17.3.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
