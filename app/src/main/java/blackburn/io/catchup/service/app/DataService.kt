@@ -1,38 +1,43 @@
-package blackburn.io.catchup.service
+package blackburn.io.catchup.service.app
 
 import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.di.scope.AppScope
+import com.amazonaws.amplify.generated.graphql.AttachTokenToCatchUpContactMutation
 import com.amazonaws.amplify.generated.graphql.CheckAppVersionQuery
+import com.amazonaws.amplify.generated.graphql.UpdateCatchUpUserMutation
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient
 import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers
 import com.apollographql.apollo.GraphQLCall
-import com.apollographql.apollo.api.Operation
-import com.apollographql.apollo.api.Query
-import com.apollographql.apollo.api.Response
-import com.apollographql.apollo.api.Subscription
+import com.apollographql.apollo.api.*
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.fetcher.ResponseFetcher
 import com.apollographql.apollo.internal.util.Cancelable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
-import org.jetbrains.annotations.NotNull
 import javax.inject.Inject
 import io.reactivex.ObservableEmitter
 import io.reactivex.FlowableEmitter
 import io.reactivex.Flowable
 import io.reactivex.BackpressureStrategy
+import type.CatchUpUserInput
 
 @AppScope
 class DataService @Inject constructor(private val client: AWSAppSyncClient) {
 
   private fun <D : Operation.Data, T, V : Operation.Variables> from(
-    @NotNull query: Query<D, T, V>,
+    operation: Operation<D, T, V>,
     fetcher: ResponseFetcher = AppSyncResponseFetchers.CACHE_AND_NETWORK
   ): Observable<Response<T>> {
 
     return Observable.create { emitter ->
-      val call = client.query(query).responseFetcher(fetcher)
+      val call: GraphQLCall<T>
+      when (operation) {
+        is Query<D, T, V> -> call = client.query(operation).responseFetcher(fetcher)
+        is Mutation<D, T, V> -> call = client.mutate(operation)
+        else -> throw Exception("Exception message")
+      }
+
       cancelOnDisposed(emitter, call)
 
       call.enqueue(object : GraphQLCall.Callback<T>() {
@@ -54,13 +59,13 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
   }
 
   private fun <D : Operation.Data, T, V : Operation.Variables> from(
-    @NotNull subscription: Subscription<D, T, V>
+    subscription: Subscription<D, T, V>
   ): Flowable<Response<T>> {
     return from(subscription, BackpressureStrategy.LATEST)
   }
 
   private fun <D : Operation.Data, T, V : Operation.Variables> from(
-    @NotNull subscription: Subscription<D, T, V>,
+    subscription: Subscription<D, T, V>,
     backPressureStrategy: BackpressureStrategy
   ): Flowable<Response<T>> {
 
@@ -94,13 +99,57 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
 
   private fun disposable(cancelable: Cancelable): Disposable {
     return object : Disposable {
-      override fun dispose() { cancelable.cancel() }
+      override fun dispose() {
+        cancelable.cancel()
+      }
+
       override fun isDisposed() = cancelable.isCanceled
     }
   }
 
   fun requestAppVersion(): Observable<Response<CheckAppVersionQuery.Data>> {
-    return from(CheckAppVersionQuery.builder().platform(Define.PLATFORM_ANDROID).build(), AppSyncResponseFetchers.NETWORK_ONLY)
+    return from(
+      CheckAppVersionQuery.builder().platform(Define.PLATFORM_ANDROID).build(),
+      AppSyncResponseFetchers.NETWORK_ONLY
+    )
+  }
+
+  fun updateUser(
+    id: String,
+    phone: String?,
+    email: String?,
+    nickname: String?,
+    profileImagePath: String?,
+    gender: String?,
+    birthday: String?,
+    ageRange: String?,
+    credit: Int?
+  ): Observable<Response<UpdateCatchUpUserMutation.Data>> {
+    return from(
+      UpdateCatchUpUserMutation.builder().id(id).data(
+        CatchUpUserInput.builder()
+          .phone(phone)
+          .email(email)
+          .nickname(nickname)
+          .profileImagePath(profileImagePath)
+          .ageRange(ageRange)
+          .gender(gender)
+          .birthday(birthday)
+          .credit(credit)
+          .build())
+        .build())
+  }
+
+  fun attachToken(
+    phone: String,
+    pushToken: String
+  ): Observable<Response<AttachTokenToCatchUpContactMutation.Data>>  {
+    return from(
+      AttachTokenToCatchUpContactMutation.builder()
+        .phone(phone)
+        .pushToken(pushToken)
+        .osType(Define.PLATFORM_ANDROID)
+        .build())
   }
 }
 

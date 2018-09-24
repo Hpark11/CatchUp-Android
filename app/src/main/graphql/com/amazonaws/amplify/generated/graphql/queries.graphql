@@ -17,6 +17,7 @@ query ListCatchUpUserByAgeRange(
       gender
       birthday
       ageRange
+      phone
       credit
     }
     nextToken
@@ -32,6 +33,7 @@ query ListCatchUpUser($count: Int, $nextToken: String) {
       gender
       birthday
       ageRange
+      phone
       credit
     }
     nextToken
@@ -58,6 +60,7 @@ query GetCatchUpUser($id: ID!) {
     gender
     birthday
     ageRange
+    phone
     credit
   }
 }

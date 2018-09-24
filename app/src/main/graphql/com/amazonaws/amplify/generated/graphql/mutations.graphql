@@ -8,6 +8,7 @@ mutation ChargeCredit($id: ID!, $credit: Int) {
     gender
     birthday
     ageRange
+    phone
     credit
   }
 }
@@ -20,6 +21,7 @@ mutation UseCredit($id: ID!) {
     gender
     birthday
     ageRange
+    phone
     credit
   }
 }
@@ -32,6 +34,7 @@ mutation UpdateCatchUpUser($id: ID!, $data: CatchUpUserInput) {
     gender
     birthday
     ageRange
+    phone
     credit
   }
 }
@@ -44,6 +47,7 @@ mutation CreateCatchUpUser($id: ID!, $data: CatchUpUserInput) {
     gender
     birthday
     ageRange
+    phone
     credit
   }
 }
@@ -56,6 +60,7 @@ mutation DeleteCatchUpUser($id: ID!) {
     gender
     birthday
     ageRange
+    phone
     credit
   }
 }

@@ -17,6 +17,7 @@ class PermissionsActivity: BaseWithoutDIActivity() {
 
     disposable += RxView.clicks(permissionApproveButton).switchMapSingle {
       return@switchMapSingle TedRx2Permission.with(this)
+        .setDeniedMessage(R.string.permission_deny_message)
         .setPermissions(
           Manifest.permission.READ_CONTACTS,
           Manifest.permission.READ_PHONE_STATE,
@@ -24,13 +25,7 @@ class PermissionsActivity: BaseWithoutDIActivity() {
           Manifest.permission.ACCESS_COARSE_LOCATION
         ).request()
     }.subscribe({ result ->
-      if (result.isGranted) {
-//        finishAfterTransition()
-      } else {
-        Toast.makeText(this,
-          "Permission Denied\n" + result.deniedPermissions.toString(), Toast.LENGTH_SHORT)
-          .show()
-      }
+      if (result.isGranted) finish()
     }, { throwable ->
       throwable.printStackTrace()
     })

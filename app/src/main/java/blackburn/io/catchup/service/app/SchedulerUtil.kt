@@ -1,4 +1,4 @@
-package blackburn.io.catchup.service
+package blackburn.io.catchup.service.app
 
 import io.reactivex.*
 

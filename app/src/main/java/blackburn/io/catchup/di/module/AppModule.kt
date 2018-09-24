@@ -3,7 +3,7 @@ package blackburn.io.catchup.di.module
 import android.content.Context
 import blackburn.io.catchup.app.App
 import blackburn.io.catchup.di.scope.AppScope
-import blackburn.io.catchup.service.SchedulerUtil
+import blackburn.io.catchup.service.app.SchedulerUtil
 import dagger.Module
 import dagger.Provides
 import io.reactivex.android.schedulers.AndroidSchedulers
