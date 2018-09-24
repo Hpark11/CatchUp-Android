@@ -10,6 +10,6 @@ import dagger.android.ContributesAndroidInjector
 abstract class ServiceBuilderModule {
 
   @ServiceScope
-  @ContributesAndroidInjector
+  @ContributesAndroidInjector(modules = [])
   abstract fun bindPushTokenService(): PushTokenService
 }

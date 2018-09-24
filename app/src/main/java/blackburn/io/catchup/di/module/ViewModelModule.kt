@@ -4,8 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import blackburn.io.catchup.di.viewmodel.ViewModelFactory
 import blackburn.io.catchup.di.viewmodel.ViewModelKey
-import blackburn.io.catchup.ui.EntranceViewModel
-import blackburn.io.catchup.ui.MainViewModel
+import blackburn.io.catchup.ui.entrance.EntranceViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap

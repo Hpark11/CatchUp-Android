@@ -2,10 +2,7 @@ package blackburn.io.catchup.service.app
 
 import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.di.scope.AppScope
-import com.amazonaws.amplify.generated.graphql.AttachTokenToCatchUpContactMutation
-import com.amazonaws.amplify.generated.graphql.CheckAppVersionQuery
-import com.amazonaws.amplify.generated.graphql.UpdateCatchUpContactMutation
-import com.amazonaws.amplify.generated.graphql.UpdateCatchUpUserMutation
+import com.amazonaws.amplify.generated.graphql.*
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient
 import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers
@@ -116,6 +113,10 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
     )
   }
 
+  fun requestUser(id: String): Observable<Response<GetCatchUpUserQuery.Data>> {
+    return from(GetCatchUpUserQuery.builder().id(id).build())
+  }
+
   fun updateUser(
     id: String,
     phone: String?,
@@ -138,6 +139,31 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
           .gender(gender)
           .birthday(birthday)
           .credit(credit)
+          .build())
+        .build())
+  }
+
+  fun createUser(
+    id: String,
+    phone: String?,
+    email: String?,
+    nickname: String?,
+    profileImagePath: String?,
+    gender: String?,
+    birthday: String?,
+    ageRange: String?
+  ): Observable<Response<CreateCatchUpUserMutation.Data>> {
+    return from(
+      CreateCatchUpUserMutation.builder().id(id).data(
+        CatchUpUserInput.builder()
+          .phone(phone)
+          .email(email)
+          .nickname(nickname)
+          .profileImagePath(profileImagePath)
+          .ageRange(ageRange)
+          .gender(gender)
+          .birthday(birthday)
+          .credit(0)
           .build())
         .build())
   }

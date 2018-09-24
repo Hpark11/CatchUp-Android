@@ -1,8 +1,7 @@
-package blackburn.io.catchup.ui
+package blackburn.io.catchup.ui.entrance
 
 import android.Manifest
 import android.os.Bundle
-import android.widget.Toast
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseWithoutDIActivity
 import blackburn.io.catchup.app.plusAssign
@@ -25,9 +24,16 @@ class PermissionsActivity: BaseWithoutDIActivity() {
           Manifest.permission.ACCESS_COARSE_LOCATION
         ).request()
     }.subscribe({ result ->
-      if (result.isGranted) finish()
+      if (result.isGranted) {
+        setResult(RESULT_CODE_PERMISSION_GRANTED)
+        finish()
+      }
     }, { throwable ->
       throwable.printStackTrace()
     })
+  }
+
+  companion object {
+    val RESULT_CODE_PERMISSION_GRANTED = 9999
   }
 }

@@ -1,20 +1,21 @@
-package blackburn.io.catchup.ui
+package blackburn.io.catchup.ui.entrance
 
 import android.Manifest
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.telephony.TelephonyManager
 import android.util.Base64
 import android.util.Log
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseActivity
 import blackburn.io.catchup.app.Define
-import blackburn.io.catchup.service.app.DataService
+import com.google.firebase.iid.FirebaseInstanceId
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.network.ErrorResult
@@ -22,7 +23,6 @@ import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
 import com.kakao.usermgmt.response.MeV2Response
 import com.kakao.util.exception.KakaoException
-import com.kakao.util.helper.log.Logger
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import javax.inject.Inject
@@ -30,14 +30,10 @@ import javax.inject.Inject
 class EntranceActivity: BaseActivity() {
 
   @Inject
-  lateinit var dataService: DataService
-
-  @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
 
   private lateinit var sessionCallback: SessionCallback
   private lateinit var viewModel: EntranceViewModel
-  private var isSignInDone = false
 
   private val isNecessaryPermissionsGranted
     get() = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED &&
@@ -56,10 +52,6 @@ class EntranceActivity: BaseActivity() {
     Session.getCurrentSession().addCallback(sessionCallback)
     Session.getCurrentSession().checkAndImplicitOpen()
 
-    if (dataService == null) {
-      val b = 2
-    }
-
     try {
       val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
 
@@ -75,6 +67,13 @@ class EntranceActivity: BaseActivity() {
     }
 
     viewModel.checkAppVersion()
+
+    if (!isNecessaryPermissionsGranted) {
+      startActivityForResult(
+        Intent(this@EntranceActivity, PermissionsActivity::class.java),
+        100
+      )
+    }
   }
 
   private fun bindViewModel() {
@@ -90,10 +89,6 @@ class EntranceActivity: BaseActivity() {
 
         if (version.revision > Define.VERSION_REVISION) {
 
-        }
-
-        if (!isNecessaryPermissionsGranted) {
-          startActivity(Intent(this@EntranceActivity, PermissionsActivity::class.java))
         }
       }
     })
@@ -114,7 +109,6 @@ class EntranceActivity: BaseActivity() {
 
   private inner class SessionCallback: ISessionCallback {
     override fun onSessionOpened() {
-
       val keys = mutableListOf<String>()
       keys.add("properties.nickname")
       keys.add("properties.profile_image")
@@ -134,22 +128,29 @@ class EntranceActivity: BaseActivity() {
         }
 
         override fun onSuccess(response: MeV2Response) {
-          Logger.d("user id : " + response.id)
-          Logger.d("email: " + response.kakaoAccount.email)
-          Logger.d("birthday: " + response.kakaoAccount.birthday)
-          Logger.d("gender: " + response.kakaoAccount.gender)
-          Logger.d("profile image: " + response.profileImagePath)
-          Logger.d("thumbnail image: " + response.thumbnailImagePath)
-          Logger.d("Nickname: " + response.nickname)
-          Logger.d("ageRange: " + response.kakaoAccount.ageRange)
-          Logger.d("displayId: " + response.kakaoAccount.displayId)
-          Logger.d("phoneNumber: " + response.kakaoAccount.phoneNumber)
+          if (!isNecessaryPermissionsGranted) return
 
-          if (!isNecessaryPermissionsGranted) {
-            isSignInDone = true
-          } else {
-            startActivity(Intent(this@EntranceActivity, MainActivity::class.java))
-          }
+          val phoneMgr = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+          val phone = phoneMgr.line1Number?.replace("[^0-9]".toRegex(), "") ?: ""
+
+          FirebaseInstanceId.getInstance().instanceId
+            .addOnSuccessListener {
+              viewModel.attachToken(phone, it.token)
+            }.addOnFailureListener {
+              it.printStackTrace()
+            }
+
+          viewModel.updateCatchUpUser(
+            response.id,
+            phone,
+            response.kakaoAccount.email,
+            response.nickname,
+            response.profileImagePath,
+            response.kakaoAccount.gender?.value,
+            response.kakaoAccount.birthday,
+            response.kakaoAccount.ageRange?.value,
+            null
+          )
         }
       })
     }

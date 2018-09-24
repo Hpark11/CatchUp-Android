@@ -22,14 +22,14 @@
             android:value="@string/kakao_app_key" />
 
         <activity android:name=".ui.MainActivity" />
-        <activity android:name=".ui.EntranceActivity">
+        <activity android:name=".ui.entrance.EntranceActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.PermissionsActivity" />
+        <activity android:name=".ui.entrance.PermissionsActivity" />
 
         <service
             android:name=".service.android.PushTokenService"
