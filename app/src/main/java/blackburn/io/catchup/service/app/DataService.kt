@@ -1,8 +1,11 @@
 package blackburn.io.catchup.service.app
 
+import android.content.Context
+import android.util.Log
 import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.di.scope.AppScope
 import com.amazonaws.amplify.generated.graphql.*
+import com.amazonaws.mobile.config.AWSConfiguration
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient
 import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers
@@ -21,6 +24,7 @@ import io.reactivex.BackpressureStrategy
 import type.CatchUpUserInput
 import type.ContactUpdateInput
 
+
 @AppScope
 class DataService @Inject constructor(private val client: AWSAppSyncClient) {
 
@@ -32,8 +36,12 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
     return Observable.create { emitter ->
       val call: GraphQLCall<T>
       when (operation) {
-        is Query<D, T, V> -> call = client.query(operation).responseFetcher(fetcher)
-        is Mutation<D, T, V> -> call = client.mutate(operation)
+        is Query<D, T, V> -> {
+          call = client.query(operation).responseFetcher(fetcher)
+        }
+        is Mutation<D, T, V> -> {
+          call = client.mutate(operation)
+        }
         else -> throw Exception("Exception message")
       }
 

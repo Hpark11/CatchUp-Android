@@ -6,18 +6,14 @@ import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.app.plusAssign
 import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.service.app.SchedulerUtil
-import blackburn.io.catchup.service.app.SharedPrefService
 import com.amazonaws.amplify.generated.graphql.CreateCatchUpUserMutation
-import com.amazonaws.amplify.generated.graphql.UpdateCatchUpContactMutation
 import com.amazonaws.amplify.generated.graphql.UpdateCatchUpUserMutation
-import com.apollographql.apollo.api.Operation
 import io.reactivex.rxkotlin.subscribeBy
 import javax.inject.Inject
 
 class EntranceViewModel @Inject constructor(
   private val scheduler: SchedulerUtil,
-  private val data: DataService,
-  private val sharedPref: SharedPrefService
+  private val data: DataService
 ): BaseViewModel() {
 
   // Output
@@ -55,7 +51,7 @@ class EntranceViewModel @Inject constructor(
     ageRange: String?,
     credit: Int?
   ) {
-    compositeDisposable += data.requestUser("$id").switchMap {
+    compositeDisposable += data.requestUser("$id").compose(scheduler.forObservable()).switchMap {
       if (it.data()?.catchUpUser?.id().isNullOrEmpty()) {
         return@switchMap data.createUser(
           "$id", phone, email, nickname, profileImagePath, gender, birthday, ageRange
@@ -65,7 +61,7 @@ class EntranceViewModel @Inject constructor(
           "$id", phone, email, nickname, profileImagePath, gender, birthday, ageRange, credit
         )
       }
-    }.switchMap {
+    }.compose(scheduler.forObservable()).switchMap {
       val operationData = it.data()
       val phoneNumber: String
       val contactNickname: String?
@@ -92,10 +88,9 @@ class EntranceViewModel @Inject constructor(
         null,
         Define.PLATFORM_ANDROID
       )
-    }.compose(scheduler.forObservable())
-      .subscribeBy(
+    }.compose(scheduler.forObservable()).subscribeBy(
       onNext = {
-//        it.data()?.updateCatchUpContact()?.
+        initDoneWithPhone.value = it?.data()?.updateCatchUpContact()?.phone()
       },
       onError = {
         it.printStackTrace()
@@ -104,7 +99,7 @@ class EntranceViewModel @Inject constructor(
   }
 
   fun attachToken(phone: String, pushToken: String) {
-    compositeDisposable += data.attachToken(phone, pushToken).compose(scheduler.forObservable())
+    compositeDisposable += data.attachToken(phone, pushToken)
       .subscribeBy(
         onNext = {
 
