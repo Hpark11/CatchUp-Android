@@ -1,11 +1,8 @@
 package blackburn.io.catchup.service.app
 
-import android.content.Context
-import android.util.Log
 import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.di.scope.AppScope
 import com.amazonaws.amplify.generated.graphql.*
-import com.amazonaws.mobile.config.AWSConfiguration
 import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient
 import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall
 import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers

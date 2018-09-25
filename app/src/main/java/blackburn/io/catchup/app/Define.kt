@@ -6,4 +6,6 @@ object Define {
   const val VERSION_REVISION = 0
 
   const val PLATFORM_ANDROID = "android"
+
+  const val APP_MARKET_URL = "https://play.google.com/store/apps/details?id=blackburn.io.audigo_android"
 }

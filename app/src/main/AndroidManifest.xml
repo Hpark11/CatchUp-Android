@@ -20,6 +20,9 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
 
         <activity android:name=".ui.MainActivity" />
         <activity android:name=".ui.entrance.EntranceActivity">
@@ -38,5 +41,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <activity android:name=".ui.creation.NewPromiseActivity" />
+        <activity android:name=".ui.creation.MapSearchActivity" />
+        <activity android:name=".ui.creation.PromiseConfirmActivity" />
+        <activity android:name=".ui.creation.MemberSelectActivity"></activity>
     </application>
+
 </manifest>

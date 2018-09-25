@@ -23,6 +23,11 @@ abstract class ViewModelModule {
   @ViewModelKey(EntranceViewModel::class)
   abstract fun bindEntranceViewModel(viewModel: EntranceViewModel): ViewModel
 
+//  @Binds
+//  @IntoMap
+//  @ViewModelKey(EntranceViewModel::class)
+//  abstract fun bindEntranceViewModel(viewModel: EntranceViewModel): ViewModel
+
   @Binds
   abstract fun bindViewModelFactory(viewModelFactory: ViewModelFactory): ViewModelProvider.Factory
 }
