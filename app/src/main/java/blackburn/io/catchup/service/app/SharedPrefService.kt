@@ -1,9 +1,11 @@
 package blackburn.io.catchup.service.app
 
 import android.content.Context
+import blackburn.io.catchup.di.scope.AppScope
 import javax.inject.Inject
 import javax.inject.Named
 
+@AppScope
 class SharedPrefService @Inject constructor(
   @Named("applicationContext") private val context: Context
 ) {

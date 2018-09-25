@@ -5,7 +5,11 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
+import android.support.v7.widget.RecyclerView
 import android.util.Pair
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseActivity
@@ -24,6 +28,30 @@ class NewPromiseActivity : BaseActivity() {
   lateinit var viewModelFactory: ViewModelProvider.Factory
 
   private lateinit var viewModel: NewPromiseViewModel
+
+  private val pickerCallback = object : DateTimePicker.Callback {
+    override fun onCancelled() {}
+
+    override fun onDateTimeRecurrenceSet(
+      selectedDate: SelectedDate,
+      hourOfDay: Int, minute: Int,
+      recurrenceOption: SublimeRecurrencePicker.RecurrenceOption,
+      recurrenceRule: String?
+    ) {
+
+      val calendar = selectedDate.firstDate
+
+      calendar.set(
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DATE),
+        hourOfDay,
+        minute
+      )
+//      timestamp = calendar.timeInMillis.toString()
+//      promiseDateInputView.setupView(PromiseInputView.InputState.APPLIED, formattedDateText(selectedDate.firstDate, hourOfDay, minute))
+    }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -80,29 +108,15 @@ class NewPromiseActivity : BaseActivity() {
 
   }
 
-  private val pickerCallback = object : DateTimePicker.Callback {
-    override fun onCancelled() {}
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    super.onActivityResult(requestCode, resultCode, data)
+    when (resultCode) {
+      MapSearchActivity.RESULT_CODE_SET_ADDRESS -> {
 
-    override fun onDateTimeRecurrenceSet(
-      selectedDate: SelectedDate,
-      hourOfDay: Int, minute: Int,
-      recurrenceOption: SublimeRecurrencePicker.RecurrenceOption,
-      recurrenceRule: String?
-    ) {
-
-      val calendar = selectedDate.firstDate
-
-      calendar.set(
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DATE),
-        hourOfDay,
-        minute
-      )
-//      timestamp = calendar.timeInMillis.toString()
-//      promiseDateInputView.setupView(PromiseInputView.InputState.APPLIED, formattedDateText(selectedDate.firstDate, hourOfDay, minute))
+      }
     }
   }
+
 
   private fun getOptions(): Pair<Boolean, SublimeOptions> {
     val options = SublimeOptions()
@@ -113,5 +127,35 @@ class NewPromiseActivity : BaseActivity() {
     options.setCanPickDateRange(false)
 
     return Pair(displayOptions != 0, options)
+  }
+
+//  class SelectedUsersRecyclerViewAdapter(
+//    private var list: List<ContactItem>
+//  ): RecyclerView.Adapter<SelectedUsersRecyclerViewAdapter.ViewHolder>() {
+//
+//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+//      = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_user_selected, parent, false))
+//
+//    override fun onBindViewHolder(holder: ViewHolder, position: Int)
+//      = holder.bind(list[position])
+//
+//    override fun getItemCount(): Int = list.size
+//
+//    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+//      fun bind(userItem: ContactItem) {
+//        itemView.selectedUserTextView.text = userItem.nickname
+//        GlideApp.with(itemView).load(userItem.imagePath).fitCenter().placeholder(R.drawable.image_place_holder).into(itemView.selectedUserImageView)
+//      }
+//    }
+//
+//    fun setItems(list: List<ContactItem>) {
+//      this.list = list
+//      notifyDataSetChanged()
+//    }
+//  }
+
+  companion object {
+    val RESULT_CODE_NEW_PROMISE_ADDED = 9999
+    val RESULT_CODE_PROMISE_EDITED = 9998
   }
 }

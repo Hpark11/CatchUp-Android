@@ -8,6 +8,7 @@ import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.service.app.SchedulerUtil
 import com.amazonaws.amplify.generated.graphql.CreateCatchUpUserMutation
 import com.amazonaws.amplify.generated.graphql.UpdateCatchUpUserMutation
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import javax.inject.Inject
 
