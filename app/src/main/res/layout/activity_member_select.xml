@@ -1,9 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/md_white_1000"
+    android:orientation="vertical"
     tools:context=".ui.creation.MemberSelectActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <blackburn.io.catchup.ui.common.ActionBar
+        android:id="@+id/userSelectActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:layout_marginEnd="@dimen/space_none"
+        android:layout_marginStart="@dimen/space_none"
+        android:layout_marginTop="@dimen/status_bar_default_height"
+        app:center_title_text="구성원 선택"
+        app:left_first_image="@drawable/icon_x"
+        app:right_second_text="@string/confirm"
+        app:right_second_type="text"
+        app:use_left_first="true"
+        app:use_right_second="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:background="@drawable/image_none"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/searchContactEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="@string/member_search"
+            android:inputType="text" />
+
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/space_mid"
+            android:contentDescription="@string/image_view_default_content_desc"
+            android:src="@drawable/icon_search" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/promiseLowerLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:contentDescription="@string/image_view_default_content_desc"
+        android:background="@color/dark_sky_blue" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/userSelectRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="24dp" />
+</LinearLayout>

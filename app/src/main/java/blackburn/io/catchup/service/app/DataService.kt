@@ -33,12 +33,8 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
     return Observable.create { emitter ->
       val call: GraphQLCall<T>
       when (operation) {
-        is Query<D, T, V> -> {
-          call = client.query(operation).responseFetcher(fetcher)
-        }
-        is Mutation<D, T, V> -> {
-          call = client.mutate(operation)
-        }
+        is Query<D, T, V> -> call = client.query(operation).responseFetcher(fetcher)
+        is Mutation<D, T, V> -> call = client.mutate(operation)
         else -> throw Exception("Exception message")
       }
 

@@ -5,6 +5,8 @@ import android.arch.lifecycle.ViewModelProvider
 import blackburn.io.catchup.di.viewmodel.ViewModelFactory
 import blackburn.io.catchup.di.viewmodel.ViewModelKey
 import blackburn.io.catchup.ui.MainViewModel
+import blackburn.io.catchup.ui.creation.MemberSelectViewModel
+import blackburn.io.catchup.ui.creation.NewPromiseViewModel
 import blackburn.io.catchup.ui.entrance.EntranceViewModel
 import dagger.Binds
 import dagger.Module
@@ -23,10 +25,15 @@ abstract class ViewModelModule {
   @ViewModelKey(EntranceViewModel::class)
   abstract fun bindEntranceViewModel(viewModel: EntranceViewModel): ViewModel
 
-//  @Binds
-//  @IntoMap
-//  @ViewModelKey(EntranceViewModel::class)
-//  abstract fun bindEntranceViewModel(viewModel: EntranceViewModel): ViewModel
+  @Binds
+  @IntoMap
+  @ViewModelKey(MemberSelectViewModel::class)
+  abstract fun bindMemberSelectViewModel(viewModel: MemberSelectViewModel): ViewModel
+
+  @Binds
+  @IntoMap
+  @ViewModelKey(NewPromiseViewModel::class)
+  abstract fun bindNewPromiseViewModel(viewModel: NewPromiseViewModel): ViewModel
 
   @Binds
   abstract fun bindViewModelFactory(viewModelFactory: ViewModelFactory): ViewModelProvider.Factory

@@ -3,6 +3,7 @@ package blackburn.io.catchup.di.module
 import blackburn.io.catchup.di.scope.ActivityScope
 import blackburn.io.catchup.ui.entrance.EntranceActivity
 import blackburn.io.catchup.ui.MainActivity
+import blackburn.io.catchup.ui.creation.MemberSelectActivity
 import blackburn.io.catchup.ui.creation.NewPromiseActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -20,4 +21,8 @@ abstract class ActivityBuilderModule {
   @ActivityScope
   @ContributesAndroidInjector(modules = [])
   abstract fun bindNewPromiseActivity(): NewPromiseActivity
+
+  @ActivityScope
+  @ContributesAndroidInjector(modules = [])
+  abstract fun bindMemberSelectActivity(): MemberSelectActivity
 }

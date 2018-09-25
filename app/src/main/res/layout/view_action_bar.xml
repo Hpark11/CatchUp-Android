@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/firstLeftSideBarButton"
+        android:layout_width="@dimen/action_bar_item_size"
+        android:layout_height="@dimen/action_bar_item_size"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0"
+        android:scaleType="centerInside" />
+
+    <ImageView
+        android:id="@+id/secondLeftSideBarButton"
+        android:layout_width="@dimen/action_bar_item_size"
+        android:layout_height="@dimen/action_bar_item_size"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0"
+        android:scaleType="centerInside" />
+
+    <LinearLayout
+        android:id="@+id/centerLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/centerImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/action_bar_item_size"
+            android:layout_gravity="center"
+            android:scaleType="centerInside" />
+
+        <TextView
+            android:id="@+id/centerTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/action_bar_item_size"
+            android:layout_marginLeft="4dp"
+            android:gravity="center_vertical"
+            tools:text="1234567891234"
+            android:maxWidth="150dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/slate"
+            android:maxLines="1"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/firstRightSideBarButton"
+        android:layout_width="@dimen/action_bar_item_size"
+        android:layout_height="@dimen/action_bar_item_size"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0"
+        android:tint="@color/md_blue_grey_800"
+        android:scaleType="centerInside" />
+
+    <ImageView
+        android:id="@+id/secondRightSideBarButton"
+        android:layout_width="@dimen/action_bar_item_size"
+        android:layout_height="@dimen/action_bar_item_size"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0"
+        android:tint="@color/md_blue_grey_800"
+        android:scaleType="centerInside" />
+
+    <TextView
+        android:id="@+id/secondRightSideBarTextButton"
+        android:layout_width="@dimen/action_bar_item_size"
+        android:layout_height="@dimen/action_bar_item_size"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="0"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/md_blue_grey_800"
+        android:textSize="16sp"
+        android:visibility="gone" />
+</LinearLayout>

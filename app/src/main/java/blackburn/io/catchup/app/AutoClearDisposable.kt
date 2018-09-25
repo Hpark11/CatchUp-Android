@@ -31,5 +31,4 @@ class AutoClearDisposable(
     compositeDisposable.clear()
     lifecycleOwner.lifecycle.removeObserver(this)
   }
-
 }

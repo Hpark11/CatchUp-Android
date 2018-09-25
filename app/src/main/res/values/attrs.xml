@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PromiseInputView">
+        <attr name="title_text" format="reference|string" />
+        <attr name="input_text" format="reference|string" />
+        <attr name="sub_image" format="reference|integer" />
+    </declare-styleable>
+
+    <declare-styleable name="ActionBar">
+        <attr name="center_title_text" format="reference|string" />
+        <attr name="use_left_first" format="boolean" />
+        <attr name="use_left_second" format="boolean" />
+        <attr name="use_right_first" format="boolean" />
+        <attr name="use_right_second" format="boolean" />
+        <attr name="left_first_image" format="reference|integer" />
+        <attr name="right_second_image" format="reference|integer" />
+        <attr name="right_second_text" format="reference|string" />
+        <attr name="right_second_type" format="reference|string" />
+    </declare-styleable>
+</resources>

@@ -18,6 +18,9 @@
     <string name="confirm">확인</string>
     <string name="cancel">취소</string>
 
+    <string name="member_search">유저 검색</string>
+    <string name="image_view_default_content_desc">기본</string>
+
     <string name="dialog_title_notify_promise">약속 공지하기</string>
     <string name="dialog_content_notify_promise">생성된 약속을 카카오톡으로 공지하시겠습니까?</string>
     <string name="dialog_notify_promise_by_kakao">카카오톡으로 공지</string>
@@ -37,4 +40,6 @@
 
     <string name="promise_confirm_title_add">약속 추가 완료</string>
     <string name="promise_confirm_title_edit">약속 수정 완료</string>
+
+    <string name="error_message_datetime_select">일시 선택 오류</string>
 </resources>

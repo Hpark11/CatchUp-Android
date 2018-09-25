@@ -4,6 +4,100 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/md_white_1000"
     tools:context=".ui.creation.NewPromiseActivity">
 
+    <ScrollView
+        android:id="@+id/newPromiseScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <blackburn.io.catchup.ui.common.ActionBar
+                android:id="@+id/newPromiseActionBar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/action_bar_height"
+                android:layout_marginTop="@dimen/status_bar_default_height"
+                app:left_first_image="@drawable/icon_x"
+                app:use_left_first="true"
+                app:center_title_text="약속 추가" />
+
+            <blackburn.io.catchup.ui.common.PromiseInputView
+                android:id="@+id/promiseNameInputView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="35dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                app:input_text="약속 명을 입력해주세요"
+                app:sub_image="@drawable/icon_search"
+                app:title_text="약속 명" />
+
+            <blackburn.io.catchup.ui.common.PromiseInputView
+                android:id="@+id/promiseDateInputView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="35dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                app:input_text="0000년 00월 00일 오후 00시 00분"
+                app:sub_image="@drawable/icon_down"
+                app:title_text="@string/promise_input_date" />
+
+            <blackburn.io.catchup.ui.common.PromiseInputView
+                android:id="@+id/promiseAddressInputView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="35dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                app:input_text="장소를 검색해주세요"
+                app:sub_image="@drawable/icon_search"
+                app:title_text="@string/promise_input_address" />
+
+            <blackburn.io.catchup.ui.common.PromiseInputView
+                android:id="@+id/promiseMemberInputView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginStart="30dp"
+                app:input_text="구성원을 검색해주세요"
+                app:sub_image="@drawable/icon_search"
+                app:title_text="@string/promise_input_time" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/selectedUsersRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="0dp"
+                android:layout_marginStart="30dp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/newPromiseConfirmButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/space_long"
+        android:layout_marginStart="@dimen/space_long"
+        android:background="@drawable/btn_go"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </android.support.constraint.ConstraintLayout>
+
