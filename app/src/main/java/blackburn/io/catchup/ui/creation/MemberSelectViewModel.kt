@@ -41,13 +41,33 @@ class MemberSelectViewModel @Inject constructor(
       return@switchMap ops.merge()
     }.compose(scheduler.forObservable()).subscribeBy(
       onNext = {
-        it.data()?.batchGetCatchUpContacts()?.let { contact ->
+        it.data()?.batchGetCatchUpContacts()?.let { contacts ->
+          realm.executeTransactionAsync { strongRealm ->
+            contacts.forEach { singleContact ->
+              singleContact?.phone()?.let { phone ->
+                var contact = strongRealm.where(Contact::class.java)
+                  .equalTo("phone", phone)
+                  .findFirst()
 
+                if (contact == null) {
+                  contact = strongRealm.createObject(Contact::class.java, phone)
+                }
+
+                contact?.profileImagePath = singleContact.profileImagePath() ?: ""
+                contact?.pushToken = singleContact.pushToken() ?: ""
+              }
+            }
+          }
         }
       },
       onError = {
         it.printStackTrace()
       }
     )
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    realm.close()
   }
 }

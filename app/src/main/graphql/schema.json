@@ -119,9 +119,13 @@
             "defaultValue" : null
           } ],
           "type" : {
-            "kind" : "OBJECT",
-            "name" : "CatchUpContact",
-            "ofType" : null
+            "kind" : "LIST",
+            "name" : null,
+            "ofType" : {
+              "kind" : "OBJECT",
+              "name" : "CatchUpContact",
+              "ofType" : null
+            }
           },
           "isDeprecated" : false,
           "deprecationReason" : null
