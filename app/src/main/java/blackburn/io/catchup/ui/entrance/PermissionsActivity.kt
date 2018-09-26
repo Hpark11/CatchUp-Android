@@ -4,7 +4,7 @@ import android.Manifest
 import android.os.Bundle
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseWithoutDIActivity
-import blackburn.io.catchup.app.plusAssign
+import blackburn.io.catchup.app.util.plusAssign
 import com.jakewharton.rxbinding2.view.RxView
 import com.tedpark.tedpermission.rx2.TedRx2Permission
 import kotlinx.android.synthetic.main.activity_permissions.*

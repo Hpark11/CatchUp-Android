@@ -10,7 +10,7 @@ import dagger.android.HasActivityInjector
 import dagger.android.HasServiceInjector
 import javax.inject.Inject
 import dagger.android.DispatchingAndroidInjector
-
+import io.realm.Realm
 
 
 class App: DaggerApplication(), HasActivityInjector, HasServiceInjector {
@@ -21,6 +21,7 @@ class App: DaggerApplication(), HasActivityInjector, HasServiceInjector {
   override fun onCreate() {
     super.onCreate()
     KakaoSDK.init(sdkAdapter)
+    Realm.init(this)
   }
 
   @Inject

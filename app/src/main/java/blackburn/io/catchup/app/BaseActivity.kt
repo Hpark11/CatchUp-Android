@@ -2,6 +2,7 @@ package blackburn.io.catchup.app
 
 import android.os.Bundle
 import android.view.WindowManager
+import blackburn.io.catchup.app.util.AutoClearDisposable
 import dagger.android.support.DaggerAppCompatActivity
 
 open class BaseActivity: DaggerAppCompatActivity() {

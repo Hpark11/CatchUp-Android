@@ -15,6 +15,12 @@ class SchedulerUtil(val background: Scheduler, val foreground: Scheduler) {
     }
   }
 
+  fun <T> forMaybe(): (Maybe<T>) -> Maybe<T> {
+    return { maybe: Maybe<T> ->
+      maybe.subscribeOn(background).observeOn(foreground)
+    }
+  }
+
   fun forCompletable(): (Completable) -> Completable {
     return { completable: Completable ->
       completable.subscribeOn(background).observeOn(foreground)

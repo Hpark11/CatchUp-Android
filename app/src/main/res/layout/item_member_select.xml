@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="@dimen/size_item_promise_member"
+        android:layout_height="@dimen/size_item_promise_member"
+        android:layout_margin="@dimen/space_long"
+        android:layout_gravity="center_vertical"
+        app:cardCornerRadius="@dimen/corner_radius_item_promise_member">
+
+        <ImageView
+            android:id="@+id/userProfileImageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/image_place_holder"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"/>
+    </android.support.v7.widget.CardView>
+
+    <TextView
+        android:id="@+id/userNameTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="@dimen/space_short"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/md_blue_grey_800"
+        android:layout_weight="1"
+        tools:text="안녕하세요"/>
+
+    <ImageView
+        android:id="@+id/checkMarkImageView"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="@dimen/space_long"
+        android:src="@drawable/icon_ok"/>
+</LinearLayout>

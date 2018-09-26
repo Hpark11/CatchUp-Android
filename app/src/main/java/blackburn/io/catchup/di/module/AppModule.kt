@@ -9,6 +9,7 @@ import dagger.Module
 import dagger.Provides
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.realm.RealmConfiguration
 import javax.inject.Named
 
 
@@ -28,4 +29,9 @@ class AppModule {
   @Named("applicationContext")
   @AppScope
   fun provideContext(app: App): Context = app.applicationContext
+
+  @Provides
+  @Named("realmConfigCatchUp")
+  @AppScope
+  fun provideCatchUpRealmConfiguration(): RealmConfiguration = RealmConfiguration.Builder().build()
 }

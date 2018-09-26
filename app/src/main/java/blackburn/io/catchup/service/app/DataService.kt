@@ -122,6 +122,10 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
     return from(BatchGetCatchUpContactsQuery.builder().ids(ids).build())
   }
 
+  fun requestPromise(id: String): Observable<Response<GetCatchUpPromiseQuery.Data>> {
+    return from(GetCatchUpPromiseQuery.builder().id(id).build())
+  }
+
   fun updateUser(
     id: String,
     phone: String?,

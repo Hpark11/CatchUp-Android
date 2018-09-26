@@ -1,4 +1,4 @@
-package blackburn.io.catchup.app
+package blackburn.io.catchup.app.util
 
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver

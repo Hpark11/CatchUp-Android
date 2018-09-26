@@ -9,7 +9,7 @@
     tools:context=".ui.creation.MemberSelectActivity">
 
     <blackburn.io.catchup.ui.common.ActionBar
-        android:id="@+id/userSelectActionBar"
+        android:id="@+id/memberSelectActionBar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
         android:layout_marginEnd="@dimen/space_none"
@@ -59,7 +59,7 @@
         android:background="@color/dark_sky_blue" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/userSelectRecyclerView"
+        android:id="@+id/memberSelectRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginEnd="30dp"
