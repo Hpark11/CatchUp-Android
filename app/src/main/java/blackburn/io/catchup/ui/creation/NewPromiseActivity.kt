@@ -16,17 +16,36 @@ import com.appeaser.sublimepickerlibrary.helpers.SublimeOptions
 import com.appeaser.sublimepickerlibrary.recurrencepicker.SublimeRecurrencePicker
 import kotlinx.android.synthetic.main.activity_new_promise.*
 import android.arch.lifecycle.Observer
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import blackburn.io.catchup.di.module.GlideApp
+import blackburn.io.catchup.model.Contact
 import blackburn.io.catchup.ui.common.PromiseInputView
+import io.realm.Realm
+import io.realm.RealmConfiguration
+import kotlinx.android.synthetic.main.item_member_selected.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class NewPromiseActivity : BaseActivity() {
+class NewPromiseActivity: BaseActivity() {
+  companion object {
+    val RESULT_CODE_NEW_PROMISE_ADDED = 9999
+    val RESULT_CODE_PROMISE_EDITED = 9998
+  }
 
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
-
   private lateinit var viewModel: NewPromiseViewModel
+
+  @Inject
+  lateinit var realmConfig: RealmConfiguration
+  private val realm: Realm by lazy { Realm.getInstance(realmConfig) }
+
+  private var contacts = listOf<String>()
 
   private val pickerCallback = object : DateTimePicker.Callback {
     override fun onCancelled() {}
@@ -61,6 +80,17 @@ class NewPromiseActivity : BaseActivity() {
 
     val id = intent.getStringExtra("id")
     id?.let { viewModel.loadPromise(it) }
+
+    selectedMembersRecyclerView.apply {
+      layoutManager = GridLayoutManager(
+        this@NewPromiseActivity,
+        1,
+        GridLayoutManager.HORIZONTAL,
+        false
+      )
+
+      adapter = SelectedMembersRecyclerViewAdapter()
+    }
 
     promiseNameInputView.setOnClickListener {
       MaterialDialog.Builder(this)
@@ -131,41 +161,48 @@ class NewPromiseActivity : BaseActivity() {
     })
 
     viewModel.contacts.observe(this, Observer {
-      it?.let { contacts ->
+      contacts = it ?: listOf()
 
+      if (contacts.isNotEmpty()) {
+        realm.where(Contact::class.java)
+          .equalTo("phone", contacts.first())
+          .findFirst()?.let { contact ->
+
+            promiseMemberInputView.setupView(
+              PromiseInputView.InputState.APPLIED,
+              "${contact.nickname}외 ${contacts.size - 1}명"
+            )
+          }
+      } else {
+        promiseMemberInputView.setupView(
+          PromiseInputView.InputState.SEARCH,
+          "구성원을 검색해주세요"
+        )
       }
+
+      selectedMembersRecyclerView.adapter.notifyDataSetChanged()
     })
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
+
     when (resultCode) {
       MapSearchActivity.RESULT_CODE_SET_ADDRESS -> {
-
+        data?.let {
+          viewModel.placeInput.onNext(
+            NewPromiseViewModel.PlaceInfo(
+              it.getStringExtra("address"),
+              it.getDoubleExtra("latitude", 0.0),
+              it.getDoubleExtra("longitude", 0.0)
+            )
+          )
+        }
       }
       MemberSelectActivity.RESULT_CODE_SELECTED -> {
-//        phoneNumberList = it.getStringArrayExtra("selected").toList()
-//
-//        val userList = mutableListOf<ContactItem>()
-//
-//        Realm.getDefaultInstance().where(ContactItem::class.java).sort("nickname").findAll().forEach {
-//          if (phoneNumberList.contains(it.phone)) {
-//            userList.add(it)
-//          }
-//        }
-//
-//        if (userList.isNotEmpty()) {
-//          promiseMemberInputView.setupView(PromiseInputView.InputState.APPLIED, "${userList.first().nickname}외 ${userList.size - 1}명")
-//        } else {
-//          promiseMemberInputView.setupView(PromiseInputView.InputState.SEARCH, "구성원을 검색해주세요")
-//        }
-//
-//        pushTokensToSend = userList.mapNotNull {
-//          if (it.pushToken.isEmpty()) null else it.pushToken
-//        }
-//        adapter.setItems(userList)
-//        validatePromise()
-//      }
+        data?.let {
+          viewModel.contactsInput.onNext(it.getStringArrayExtra("selected").toList())
+        }
       }
     }
   }
@@ -181,33 +218,28 @@ class NewPromiseActivity : BaseActivity() {
     return Pair(displayOptions != 0, options)
   }
 
-//  class SelectedUsersRecyclerViewAdapter(
-//    private var list: List<ContactItem>
-//  ): RecyclerView.Adapter<SelectedUsersRecyclerViewAdapter.ViewHolder>() {
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
-//      = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_user_selected, parent, false))
-//
-//    override fun onBindViewHolder(holder: ViewHolder, position: Int)
-//      = holder.bind(list[position])
-//
-//    override fun getItemCount(): Int = list.size
-//
-//    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-//      fun bind(userItem: ContactItem) {
-//        itemView.selectedUserTextView.text = userItem.nickname
-//        GlideApp.with(itemView).load(userItem.imagePath).fitCenter().placeholder(R.drawable.image_place_holder).into(itemView.selectedUserImageView)
-//      }
-//    }
-//
-//    fun setItems(list: List<ContactItem>) {
-//      this.list = list
-//      notifyDataSetChanged()
-//    }
-//  }
+  inner class SelectedMembersRecyclerViewAdapter
+    : RecyclerView.Adapter<SelectedMembersRecyclerViewAdapter.ViewHolder>() {
 
-  companion object {
-    val RESULT_CODE_NEW_PROMISE_ADDED = 9999
-    val RESULT_CODE_PROMISE_EDITED = 9998
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+      = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_member_selected, parent, false))
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int)
+      = holder.bind(contacts[position])
+
+    override fun getItemCount(): Int = contacts.size
+
+    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+      fun bind(phone: String) {
+        Contact.find(phone, realm)?.let {
+          itemView.selectedMemberTextView.text = it.nickname
+          GlideApp.with(itemView)
+            .load(it.profileImagePath)
+            .fitCenter()
+            .placeholder(R.drawable.profile_default)
+            .into(itemView.selectedMemberImageView)
+        }
+      }
+    }
   }
 }

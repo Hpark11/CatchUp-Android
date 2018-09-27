@@ -20,6 +20,9 @@ import kotlinx.android.synthetic.main.item_member_select.view.*
 import javax.inject.Inject
 
 class MemberSelectActivity: BaseActivity() {
+  companion object {
+    val RESULT_CODE_SELECTED = 9997
+  }
 
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -93,22 +96,21 @@ class MemberSelectActivity: BaseActivity() {
     override fun getItemCount(): Int = searchedList.size
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-      fun bind(contactItem: Contact) {
-        itemView.userNameTextView.text = contactItem.nickname
-        itemView.isSelected = selectedSet.contains(contactItem.phone)
+      fun bind(item: Contact) {
+        itemView.userNameTextView.text = item.nickname
+        itemView.isSelected = selectedSet.contains(item.phone)
         if (itemView.isSelected) {
           itemView.checkMarkImageView.setImageDrawable(resources.getDrawable(R.drawable.icon_ok))
         } else {
           itemView.checkMarkImageView.setImageDrawable(resources.getDrawable(R.drawable.image_none))
         }
 
-
         itemView.setOnClickListener {
           if (it.isSelected) {
-            selectedSet.remove(contactItem.phone)
+            selectedSet.remove(item.phone)
             itemView.checkMarkImageView.setImageDrawable(resources.getDrawable(R.drawable.image_none))
           } else {
-            selectedSet.add(contactItem.phone)
+            selectedSet.add(item.phone)
             itemView.checkMarkImageView.setImageDrawable(resources.getDrawable(R.drawable.icon_ok))
           }
 
@@ -116,9 +118,5 @@ class MemberSelectActivity: BaseActivity() {
         }
       }
     }
-  }
-
-  companion object {
-    val RESULT_CODE_SELECTED = 9997
   }
 }

@@ -79,7 +79,7 @@
                 app:title_text="@string/promise_input_time" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/selectedUsersRecyclerView"
+                android:id="@+id/selectedMembersRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="0dp"

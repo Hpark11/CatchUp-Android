@@ -53,12 +53,12 @@ dependencies {
     implementation 'com.jakewharton.rxbinding2:rxbinding-leanback-v17:2.1.1'
 
     //dagger
-    implementation 'com.google.dagger:dagger:2.13'
+    implementation 'com.google.dagger:dagger:2.15'
     implementation 'com.google.dagger:dagger-android:2.15'
-    implementation 'com.google.dagger:dagger-android-support:2.13'
-    kapt 'com.google.dagger:dagger-compiler:2.13'
-    kapt 'com.google.dagger:dagger-android-processor:2.13'
-    kapt 'com.google.dagger:dagger-android-support:2.13'
+    implementation 'com.google.dagger:dagger-android-support:2.15'
+    kapt 'com.google.dagger:dagger-compiler:2.15'
+    kapt 'com.google.dagger:dagger-android-processor:2.15'
+    kapt 'com.google.dagger:dagger-android-support:2.15'
 
     // kakao sign in sdk
     implementation group: 'com.kakao.sdk', name: 'usermgmt', version: project.KAKAO_SDK_VERSION
@@ -80,6 +80,14 @@ dependencies {
 
     // DateTime Picker
     implementation 'com.appeaser.sublimepickerlibrary:sublimepickerlibrary:2.1.1'
+
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+    kapt "android.arch.lifecycle:compiler:1.0.0"
+    kapt 'com.github.bumptech.glide:compiler:4.7.1'
+    implementation 'jp.wasabeef:glide-transformations:3.3.0'
+    implementation 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

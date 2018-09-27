@@ -1,5 +1,6 @@
 package blackburn.io.catchup.model
 
+import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -9,4 +10,10 @@ open class Contact(
   var profileImagePath: String = "",
   var email: String = "",
   var pushToken: String = ""
-): RealmObject()
+): RealmObject() {
+
+  companion object {
+    fun find(phone: String, realm: Realm = Realm.getDefaultInstance())
+      = realm.where(Contact::class.java).equalTo("phone", phone).findFirst()
+  }
+}

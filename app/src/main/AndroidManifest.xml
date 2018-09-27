@@ -42,10 +42,23 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ui.creation.NewPromiseActivity" />
+        <service android:name=".service.android.LocationTrackingService" />
+
+        <activity android:name=".ui.creation.NewPromiseActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="@string/kakaolink_host"
+                    android:scheme="@string/kakao_scheme" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.creation.MapSearchActivity" />
         <activity android:name=".ui.creation.PromiseConfirmActivity" />
-        <activity android:name=".ui.creation.MemberSelectActivity"></activity>
+        <activity android:name=".ui.creation.MemberSelectActivity" />
+        <activity android:name=".ui.detail.PromiseDetailActivity" />
     </application>
-
 </manifest>

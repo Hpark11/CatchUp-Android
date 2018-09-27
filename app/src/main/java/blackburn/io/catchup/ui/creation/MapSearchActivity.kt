@@ -18,6 +18,9 @@ import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.activity_map_search.*
 
 class MapSearchActivity: BaseWithoutDIActivity(), OnMapReadyCallback {
+  companion object {
+    val RESULT_CODE_SET_ADDRESS = 9998
+  }
 
   private var selectedAddress: String = ""
   private var selectedLatitude: Double = 0.0
@@ -81,9 +84,5 @@ class MapSearchActivity: BaseWithoutDIActivity(), OnMapReadyCallback {
       setResult(RESULT_CODE_SET_ADDRESS, intent)
       finish()
     }
-  }
-
-  companion object {
-    val RESULT_CODE_SET_ADDRESS = 9998
   }
 }
