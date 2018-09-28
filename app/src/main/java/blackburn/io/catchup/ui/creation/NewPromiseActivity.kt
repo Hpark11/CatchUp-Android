@@ -21,11 +21,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import blackburn.io.catchup.app.util.plusAssign
 import blackburn.io.catchup.di.module.GlideApp
-import blackburn.io.catchup.model.Contact
 import blackburn.io.catchup.ui.common.PromiseInputView
-import io.realm.Realm
-import io.realm.RealmConfiguration
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.item_member_selected.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,10 +39,6 @@ class NewPromiseActivity: BaseActivity() {
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
   private lateinit var viewModel: NewPromiseViewModel
-
-  @Inject
-  lateinit var realmConfig: RealmConfiguration
-  private val realm: Realm by lazy { Realm.getInstance(realmConfig) }
 
   private var contacts = listOf<String>()
 
@@ -164,15 +159,22 @@ class NewPromiseActivity: BaseActivity() {
       contacts = it ?: listOf()
 
       if (contacts.isNotEmpty()) {
-        realm.where(Contact::class.java)
-          .equalTo("phone", contacts.first())
-          .findFirst()?.let { contact ->
+        viewModel.loadSingleContact(contacts.first())?.let { contactFlowable ->
+          disposable += contactFlowable.subscribeBy(
+            onNext = { contact ->
+              val input = if (contacts.size == 1) contact.nickname
+                          else "${contact.nickname}외 ${contacts.size - 1}명"
 
-            promiseMemberInputView.setupView(
-              PromiseInputView.InputState.APPLIED,
-              "${contact.nickname}외 ${contacts.size - 1}명"
-            )
-          }
+              promiseMemberInputView.setupView(
+                PromiseInputView.InputState.APPLIED,
+                input
+              )
+            },
+            onError = {
+              it.printStackTrace()
+            }
+          )
+        }
       } else {
         promiseMemberInputView.setupView(
           PromiseInputView.InputState.SEARCH,
@@ -222,7 +224,8 @@ class NewPromiseActivity: BaseActivity() {
     : RecyclerView.Adapter<SelectedMembersRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
-      = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_member_selected, parent, false))
+      = ViewHolder(LayoutInflater.from(parent.context)
+        .inflate(R.layout.item_member_selected, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int)
       = holder.bind(contacts[position])
@@ -231,13 +234,21 @@ class NewPromiseActivity: BaseActivity() {
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
       fun bind(phone: String) {
-        Contact.find(phone, realm)?.let {
-          itemView.selectedMemberTextView.text = it.nickname
-          GlideApp.with(itemView)
-            .load(it.profileImagePath)
-            .fitCenter()
-            .placeholder(R.drawable.profile_default)
-            .into(itemView.selectedMemberImageView)
+
+        viewModel.loadSingleContact(phone)?.let { contactFlowable ->
+          disposable += contactFlowable.subscribeBy(
+            onNext = { contact ->
+              itemView.selectedMemberTextView.text = contact.nickname
+              GlideApp.with(itemView)
+                .load(contact.profileImagePath)
+                .fitCenter()
+                .placeholder(R.drawable.profile_default)
+                .into(itemView.selectedMemberImageView)
+            },
+            onError = {
+              it.printStackTrace()
+            }
+          )
         }
       }
     }

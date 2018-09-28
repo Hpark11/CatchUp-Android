@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="64dp"
-    android:layout_height="80dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/space_short"
     android:gravity="center"
     android:orientation="vertical">
 
     <android.support.v7.widget.CardView
-        android:layout_width="@dimen/size_item_promise_member"
-        android:layout_height="@dimen/size_item_promise_member"
+        android:layout_width="@dimen/size_item_promise_member_min"
+        android:layout_height="@dimen/size_item_promise_member_min"
         android:layout_gravity="center"
+        android:layout_marginTop="@dimen/space_long"
+        android:layout_marginBottom="@dimen/space_long"
+        android:layout_marginStart="@dimen/space_short"
+        android:layout_marginEnd="@dimen/space_short"
         android:elevation="0dp"
-        app:cardCornerRadius="@dimen/corner_radius_item_promise_member">
+        app:cardCornerRadius="16dp">
 
         <ImageView
             android:id="@+id/selectedMemberImageView"
@@ -26,10 +30,9 @@
         android:id="@+id/selectedMemberTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_short"
         android:maxLength="6"
         android:singleLine="true"
         android:textColor="@color/md_blue_grey_800"
-        android:textSize="13sp"
+        android:textSize="12sp"
         android:textStyle="bold" />
 </LinearLayout>
