@@ -18,6 +18,7 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.FlowableEmitter
 import io.reactivex.Flowable
 import io.reactivex.BackpressureStrategy
+import type.CatchUpPromiseInput
 import type.CatchUpUserInput
 import type.ContactUpdateInput
 
@@ -184,26 +185,73 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
     pushToken: String?,
     osType: String?
   ): Observable<Response<UpdateCatchUpContactMutation.Data>> {
-    return from(UpdateCatchUpContactMutation.builder().phone(phone).contact(
-      ContactUpdateInput.builder()
-        .nickname(nickname)
-        .profileImagePath(profileImagePath)
-        .osType(osType)
-        .pushToken(pushToken)
+    return from(
+      UpdateCatchUpContactMutation.builder().phone(phone).contact(
+        ContactUpdateInput.builder()
+          .nickname(nickname)
+          .profileImagePath(profileImagePath)
+          .osType(osType)
+          .pushToken(pushToken)
+          .build())
         .build())
-      .build())
   }
 
   fun attachToken(
     phone: String,
     pushToken: String
-  ): Observable<Response<AttachTokenToCatchUpContactMutation.Data>>  {
+  ): Observable<Response<AttachTokenToCatchUpContactMutation.Data>> {
     return from(
       AttachTokenToCatchUpContactMutation.builder()
         .phone(phone)
         .pushToken(pushToken)
         .osType(Define.PLATFORM_ANDROID)
-        .build())
+        .build()
+    )
+  }
+
+  fun createPromise(
+    owner: String,
+    name: String,
+    dateTime: String,
+    address: String,
+    latitude: Double,
+    longitude: Double
+  ): Observable<Response<CreateCatchUpPromiseMutation.Data>> {
+    return from(
+      CreateCatchUpPromiseMutation.builder().data(
+        CatchUpPromiseInput.builder()
+          .owner(owner)
+          .name(name)
+          .dateTime(dateTime)
+          .address(address)
+          .latitude(latitude)
+          .longitude(longitude)
+          .build()
+      ).build()
+    )
+  }
+
+  fun updatePromise(
+    id: String,
+    owner: String,
+    name: String,
+    dateTime: String,
+    address: String,
+    latitude: Double,
+    longitude: Double
+  ): Observable<Response<UpdateCatchUpPromiseMutation.Data>> {
+    return from(
+      UpdateCatchUpPromiseMutation.builder().id(id).data(
+        CatchUpPromiseInput.builder()
+          .owner(owner)
+          .name(name)
+          .dateTime(dateTime)
+          .address(address)
+          .latitude(latitude)
+          .longitude(longitude)
+          .build()
+      ).build()
+    )
   }
 }
 

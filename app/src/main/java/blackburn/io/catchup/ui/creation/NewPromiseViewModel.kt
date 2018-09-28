@@ -22,7 +22,7 @@ class NewPromiseViewModel @Inject constructor(
   private val scheduler: SchedulerUtil,
   private val data: DataService,
   @Named("realmConfigCatchUp") private val realmConfig: RealmConfiguration
-): BaseViewModel() {
+) : BaseViewModel() {
 
   private val realm: Realm by lazy { Realm.getInstance(realmConfig) }
 
@@ -71,6 +71,45 @@ class NewPromiseViewModel @Inject constructor(
         it.printStackTrace()
       }
     )
+  }
+
+  fun makePromise(
+    owner: String,
+    name: String,
+    dateTime: String,
+    address: String,
+    latitude: Double,
+    longitude: Double
+  ) {
+    compositeDisposable += data.createPromise(owner, name, dateTime, address, latitude, longitude)
+      .subscribeBy(
+        onNext = {
+
+        },
+        onError = {
+
+        }
+      )
+  }
+
+  fun editPromise(
+    id: String,
+    owner: String,
+    name: String,
+    dateTime: String,
+    address: String,
+    latitude: Double,
+    longitude: Double
+  ) {
+    compositeDisposable += data.updatePromise(id, owner, name, dateTime, address, latitude, longitude)
+      .subscribeBy(
+        onNext = {
+
+        },
+        onError = {
+
+        }
+      )
   }
 
   data class PlaceInfo(val address: String, val latitude: Double, val longitude: Double)

@@ -126,8 +126,12 @@ class NewPromiseActivity: BaseActivity() {
 
     promiseMemberInputView.setOnClickListener {
       val intent = Intent(this, MemberSelectActivity::class.java)
-      intent.putExtra("selected", ArrayList(viewModel.contacts.value ?: listOf()))
+      intent.putExtra("selected", ArrayList(contacts))
       startActivityForResult(intent,0)
+    }
+
+    newPromiseConfirmButton.setOnClickListener {
+
     }
   }
 
