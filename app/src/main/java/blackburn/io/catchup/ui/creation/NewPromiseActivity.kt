@@ -1,5 +1,6 @@
 package blackburn.io.catchup.ui.creation
 
+import android.app.ActivityOptions
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -23,17 +24,19 @@ import android.view.View
 import android.view.ViewGroup
 import blackburn.io.catchup.app.util.plusAssign
 import blackburn.io.catchup.di.module.GlideApp
+import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.ui.common.PromiseInputView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.item_member_selected.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class NewPromiseActivity: BaseActivity() {
+class NewPromiseActivity : BaseActivity() {
   companion object {
-    val RESULT_CODE_NEW_PROMISE_ADDED = 9999
-    val RESULT_CODE_PROMISE_EDITED = 9998
+    const val RESULT_CODE_PROMISE_ADDED = 9999
+    const val RESULT_CODE_PROMISE_EDITED = 9998
   }
 
   @Inject
@@ -127,11 +130,43 @@ class NewPromiseActivity: BaseActivity() {
     promiseMemberInputView.setOnClickListener {
       val intent = Intent(this, MemberSelectActivity::class.java)
       intent.putExtra("selected", ArrayList(contacts))
-      startActivityForResult(intent,0)
+      startActivityForResult(intent, 0)
     }
 
-    newPromiseConfirmButton.setOnClickListener {
-
+    newPromiseConfirmButton.setOnClickListener { view ->
+      if (id != null) {
+        disposable += viewModel.editPromise(id).observeOn(AndroidSchedulers.mainThread()).subscribeBy(
+          onSuccess = { data ->
+            confirmPromise(id)
+          },
+          onError = {
+            it.printStackTrace()
+          },
+          onComplete = {
+            Toast.makeText(this@NewPromiseActivity, "완료", Toast.LENGTH_LONG).show()
+          }
+        )
+      } else {
+        disposable += viewModel.makePromise().observeOn(AndroidSchedulers.mainThread()).subscribeBy(
+          onSuccess = {
+            confirmPromise()
+          },
+          onError = {
+            when (it) {
+              is NewPromiseViewModel.CreditRunoutException -> {
+                Toast.makeText(this@NewPromiseActivity, "크레딧이 부족해요", Toast.LENGTH_LONG).show()
+              }
+              is DataService.QueryException -> {
+                Toast.makeText(this@NewPromiseActivity, "요청 오류", Toast.LENGTH_LONG).show()
+              }
+              is NewPromiseViewModel.PhoneNotFoundException -> {
+                Toast.makeText(this@NewPromiseActivity, "핸드폰 번호 요청 오류", Toast.LENGTH_LONG).show()
+              }
+            }
+            it.printStackTrace()
+          }
+        )
+      }
     }
   }
 
@@ -167,7 +202,7 @@ class NewPromiseActivity: BaseActivity() {
           disposable += contactFlowable.subscribeBy(
             onNext = { contact ->
               val input = if (contacts.size == 1) contact.nickname
-                          else "${contact.nickname}외 ${contacts.size - 1}명"
+              else "${contact.nickname}외 ${contacts.size - 1}명"
 
               promiseMemberInputView.setupView(
                 PromiseInputView.InputState.APPLIED,
@@ -213,6 +248,24 @@ class NewPromiseActivity: BaseActivity() {
     }
   }
 
+  private fun confirmPromise(id: String = "") {
+    val options = ActivityOptions.makeSceneTransitionAnimation(this)
+    val intent = Intent(this@NewPromiseActivity, PromiseConfirmActivity::class.java)
+    val isEdit = id.isNotEmpty()
+
+    intent.putExtra("isEdit", isEdit)
+    intent.putExtra("name", promiseNameInputView.text)
+    intent.putExtra("dateTime", promiseDateInputView.text)
+    intent.putExtra("location", promiseAddressInputView.text)
+    intent.putExtra("members", promiseMemberInputView.text)
+    startActivity(intent, options.toBundle())
+
+    val resultIntent = Intent()
+    resultIntent.putExtra("id", id)
+    setResult(if (isEdit) RESULT_CODE_PROMISE_EDITED else RESULT_CODE_PROMISE_ADDED, resultIntent)
+    finish()
+  }
+
   private fun getOptions(): Pair<Boolean, SublimeOptions> {
     val options = SublimeOptions()
     val displayOptions = SublimeOptions.ACTIVATE_DATE_PICKER or SublimeOptions.ACTIVATE_TIME_PICKER
@@ -227,16 +280,20 @@ class NewPromiseActivity: BaseActivity() {
   inner class SelectedMembersRecyclerViewAdapter
     : RecyclerView.Adapter<SelectedMembersRecyclerViewAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
-      = ViewHolder(LayoutInflater.from(parent.context)
-        .inflate(R.layout.item_member_selected, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
+      LayoutInflater.from(parent.context)
+        .inflate(
+          R.layout.item_member_selected,
+          parent,
+          false
+        )
+    )
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int)
-      = holder.bind(contacts[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(contacts[position])
 
     override fun getItemCount(): Int = contacts.size
 
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
       fun bind(phone: String) {
 
         viewModel.loadSingleContact(phone)?.let { contactFlowable ->

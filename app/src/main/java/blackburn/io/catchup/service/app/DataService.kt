@@ -215,7 +215,8 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
     dateTime: String,
     address: String,
     latitude: Double,
-    longitude: Double
+    longitude: Double,
+    contacts: List<String>
   ): Observable<Response<CreateCatchUpPromiseMutation.Data>> {
     return from(
       CreateCatchUpPromiseMutation.builder().data(
@@ -226,6 +227,7 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
           .address(address)
           .latitude(latitude)
           .longitude(longitude)
+          .contacts(contacts)
           .build()
       ).build()
     )
@@ -238,7 +240,8 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
     dateTime: String,
     address: String,
     latitude: Double,
-    longitude: Double
+    longitude: Double,
+    contacts: List<String>
   ): Observable<Response<UpdateCatchUpPromiseMutation.Data>> {
     return from(
       UpdateCatchUpPromiseMutation.builder().id(id).data(
@@ -249,9 +252,16 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
           .address(address)
           .latitude(latitude)
           .longitude(longitude)
+          .contacts(contacts)
           .build()
       ).build()
     )
   }
+
+  fun useCredit(id: String): Observable<Response<UseCreditMutation.Data>> {
+    return from(UseCreditMutation.builder().id(id).build())
+  }
+
+  class QueryException(queryName: String?): Exception(queryName)
 }
 

@@ -22,4 +22,8 @@ class SharedPrefService @Inject constructor(
   var pushToken: String
     get() = sharedInfo.getString("pushToken", "")
     set(value) = sharedInfo.edit().putString("pushToken", value).apply()
+
+  var userId: String
+    get() = sharedInfo.getString("userId", "")
+    set(value) = sharedInfo.edit().putString("userId", value).apply()
 }

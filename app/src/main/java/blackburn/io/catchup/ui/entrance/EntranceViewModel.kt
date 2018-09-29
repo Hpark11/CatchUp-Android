@@ -5,6 +5,7 @@ import blackburn.io.catchup.app.BaseViewModel
 import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.service.app.SchedulerUtil
+import blackburn.io.catchup.service.app.SharedPrefService
 import com.amazonaws.amplify.generated.graphql.CreateCatchUpUserMutation
 import com.amazonaws.amplify.generated.graphql.UpdateCatchUpUserMutation
 import io.reactivex.rxkotlin.plusAssign
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 class EntranceViewModel @Inject constructor(
   private val scheduler: SchedulerUtil,
-  private val data: DataService
+  private val data: DataService,
+  private val pref: SharedPrefService
 ) : BaseViewModel() {
 
   // Output
@@ -40,7 +42,7 @@ class EntranceViewModel @Inject constructor(
   }
 
   fun updateCatchUpUser(
-    id: Long,
+    id: String,
     phone: String?,
     email: String?,
     nickname: String?,
@@ -50,14 +52,16 @@ class EntranceViewModel @Inject constructor(
     ageRange: String?,
     credit: Int?
   ) {
-    compositeDisposable += data.requestUser("$id").compose(scheduler.forObservable()).switchMap {
+    compositeDisposable += data.requestUser(id).compose(scheduler.forObservable()).switchMap {
+      pref.userId = id
+
       if (it.data()?.catchUpUser?.id().isNullOrEmpty()) {
         return@switchMap data.createUser(
-          "$id", phone, email, nickname, profileImagePath, gender, birthday, ageRange
+          id, phone, email, nickname, profileImagePath, gender, birthday, ageRange
         )
       } else {
         return@switchMap data.updateUser(
-          "$id", phone, email, nickname, profileImagePath, gender, birthday, ageRange, credit
+          id, phone, email, nickname, profileImagePath, gender, birthday, ageRange, credit
         )
       }
     }.compose(scheduler.forObservable()).switchMap {
@@ -89,7 +93,9 @@ class EntranceViewModel @Inject constructor(
       )
     }.compose(scheduler.forObservable()).subscribeBy(
       onNext = {
-        initDoneWithPhone.value = it?.data()?.updateCatchUpContact()?.phone()
+        val phoneNumber = it?.data()?.updateCatchUpContact()?.phone()
+        pref.phone = phoneNumber ?: ""
+        initDoneWithPhone.value = phoneNumber
       },
       onError = {
         it.printStackTrace()

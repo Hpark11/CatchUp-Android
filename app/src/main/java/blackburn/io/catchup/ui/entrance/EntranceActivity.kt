@@ -147,7 +147,7 @@ class EntranceActivity: BaseActivity() {
             }
 
           viewModel.updateCatchUpUser(
-            response.id,
+            "${response.id}",
             phone,
             response.kakaoAccount.email,
             response.nickname,
