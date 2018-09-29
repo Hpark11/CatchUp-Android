@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/promiseCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="4dp"
+        app:cardCornerRadius="@dimen/corner_radius_normal"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_promise_card">
+
+            <LinearLayout
+                android:id="@+id/promiseContentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="80dp"
+                android:orientation="vertical"
+                android:padding="@dimen/space_long"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/space_extreme_short">
+
+                    <TextView
+                        android:id="@+id/promiseNameTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/slate"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="@dimen/space_mid"
+                        tools:text="친구 생일파티 모임" />
+
+                    <TextView
+                        android:id="@+id/timeLeftTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textAlignment="textEnd"
+                        android:layout_marginEnd="@dimen/space_mid"
+                        android:textColor="@color/md_blue_400"
+                        android:textSize="14sp"
+                        tools:text="29분 전" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/promiseDateTimeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/space_extreme_short"
+                    android:textColor="@color/cool_grey"
+                    android:textSize="13sp"
+                    tools:text="오후 8시, 7.27 (금)" />
+
+                <TextView
+                    android:id="@+id/promiseAddressTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/space_extreme_short"
+                    android:textColor="@color/cool_grey"
+                    android:textSize="13sp"
+                    tools:text="경기도 고양시 일산동구" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/membersRecyclerView"
+                    android:layout_marginTop="@dimen/space_mid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/promiseDateCardView"
+        android:layout_width="88dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/space_long"
+        android:layout_marginTop="@dimen/space_long"
+        app:cardCornerRadius="@dimen/corner_radius_normal"
+        app:cardBackgroundColor="@color/md_blue_600"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/promiseDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="44sp"
+                android:textStyle="bold"
+                android:textColor="@color/md_white_1000"
+                android:text="23"/>
+
+            <TextView
+                android:id="@+id/promiseDayTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="@color/md_white_1000"
+                android:text="월요일"
+                android:layout_marginBottom="@dimen/space_mid"/>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</android.support.constraint.ConstraintLayout>
+
+

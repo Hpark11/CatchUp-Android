@@ -9,4 +9,8 @@ object Define {
   const val PLATFORM_ANDROID = "android"
 
   const val APP_MARKET_URL = "https://play.google.com/store/apps/details?id=blackburn.io.audigo_android"
+
+  const val DIFF_DAYS = (24 * 60 * 60 * 1000)
+  const val DIFF_HOURS = (60 * 60 * 1000)
+  const val DIFF_MINUTES = (60 * 1000)
 }

@@ -51,6 +51,17 @@ query BatchGetCatchUpContacts($ids: [ID]) {
     osType
   }
 }
+query GetCatchUpContact($phone: ID) {
+  getCatchUpContact(phone: $phone) {
+    phone
+    nickname
+    profileImagePath
+    latitude
+    longitude
+    pushToken
+    osType
+  }
+}
 query GetCatchUpPromise($id: ID!) {
   getCatchUpPromise(id: $id) {
     id

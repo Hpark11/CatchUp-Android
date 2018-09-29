@@ -116,7 +116,17 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
   }
 
   fun requestUser(id: String): Observable<Response<GetCatchUpUserQuery.Data>> {
-    return from(GetCatchUpUserQuery.builder().id(id).build())
+    return from(
+      GetCatchUpUserQuery.builder().id(id).build(),
+      AppSyncResponseFetchers.NETWORK_ONLY
+    )
+  }
+
+  fun requestContact(phone: String): Observable<Response<GetCatchUpContactQuery.Data>> {
+    return from (
+      GetCatchUpContactQuery.builder().phone(phone).build(),
+      AppSyncResponseFetchers.CACHE_FIRST
+    )
   }
 
   fun requestContacts(ids: List<String>): Observable<Response<BatchGetCatchUpContactsQuery.Data>> {
@@ -125,6 +135,10 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
 
   fun requestPromise(id: String): Observable<Response<GetCatchUpPromiseQuery.Data>> {
     return from(GetCatchUpPromiseQuery.builder().id(id).build())
+  }
+
+  fun requestPromises(phone: String): Observable<Response<ListCatchUpPromisesByContactQuery.Data>> {
+    return from(ListCatchUpPromisesByContactQuery.builder().contact(phone).build())
   }
 
   fun updateUser(
