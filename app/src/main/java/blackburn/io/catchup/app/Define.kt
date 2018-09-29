@@ -13,4 +13,6 @@ object Define {
   const val DIFF_DAYS = (24 * 60 * 60 * 1000)
   const val DIFF_HOURS = (60 * 60 * 1000)
   const val DIFF_MINUTES = (60 * 1000)
+
+  const val ACTIVATE_PERIOD = 7200000
 }

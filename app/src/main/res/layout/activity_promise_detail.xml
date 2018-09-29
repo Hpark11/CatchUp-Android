@@ -4,6 +4,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/md_white_1000"
     tools:context=".ui.detail.PromiseDetailActivity">
 
+    <blackburn.io.catchup.ui.common.ActionBar
+        android:id="@+id/promiseDetailActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_height"
+        android:background="@color/dark_sky_blue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/displayChangeLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/space_none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/promiseDetailActionBar" />
+
+    <TextView
+        android:id="@+id/promiseDetailDateTimeTextView"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="@dimen/space_none"
+        android:gravity="center"
+        android:background="#e6ffffff"
+        android:textColor="@color/slate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/displayChangeLayout"
+        tools:text="07.23(월) 오후 7시 30분" />
+
+    <TextView
+        android:id="@+id/promiseEditButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginTop="8dp"
+        android:text="수정"
+        android:textColor="@color/dark_sky_blue"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@+id/promiseDetailDateTimeTextView"
+        app:layout_constraintEnd_toEndOf="@+id/promiseDetailDateTimeTextView"
+        app:layout_constraintTop_toTopOf="@+id/promiseDetailDateTimeTextView" />
+
+    <ImageView
+        android:id="@+id/promiseDetailRefreshButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="13dp"
+        android:src="@drawable/icon_re"
+        app:layout_constraintBottom_toTopOf="@+id/promiseDetailToggleButton"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ImageView
+        android:id="@+id/promiseDetailToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="13dp"
+        android:src="@drawable/icon_toggle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </android.support.constraint.ConstraintLayout>
