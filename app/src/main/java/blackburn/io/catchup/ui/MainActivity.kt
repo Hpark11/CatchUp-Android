@@ -10,7 +10,6 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.format.DateFormat
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,12 +38,14 @@ class MainActivity : BaseActivity() {
   private lateinit var viewModel: MainViewModel
 
   private var monthPicker: MonthPicker? = null
+  private val current = Calendar.getInstance()
 
   private val dateSetListener = DatePickerDialog.OnDateSetListener { datePicker, year, month, day ->
-    //    filterPromiseListByPeriod(year, month - 1)
-//    current.set(Calendar.YEAR, year)
-//    current.set(Calendar.MONTH, month - 1)
-//    monthPickerDialog?.dismiss()
+    current.set(Calendar.YEAR, year)
+    current.set(Calendar.MONTH, month - 1)
+    formatCurrent(current)
+    viewModel.filterInput.onNext(Pair(year, month))
+    monthPicker?.dismiss()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,11 +56,10 @@ class MainActivity : BaseActivity() {
     bindViewModel()
 
     val phone = intent.getStringExtra("phone")
+    formatCurrent(current)
 
-    promisesRecyclerView.apply {
-      adapter = PromisesRecyclerViewAdapter(phone)
-      LinearLayoutManager(this@MainActivity, LinearLayoutManager.VERTICAL, false)
-    }
+    promisesRecyclerView.adapter = PromisesRecyclerViewAdapter(phone)
+    promisesRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
 
     addPromiseButton.setOnClickListener {
       val intent = Intent(this, NewPromiseActivity::class.java)
@@ -67,37 +67,46 @@ class MainActivity : BaseActivity() {
       startActivityForResult(intent, 100)
     }
 
-//    monthSelectLayout.setOnClickListener {
-//      monthPicker = MonthPicker.getInstance()
-//      monthPicker?.setYearMonth(current.get(Calendar.YEAR), current.get(Calendar.MONTH) + 1)
-//      monthPicker?.listener = dateSetListener
-//      monthPicker?.show(supportFragmentManager,"");
-//    }
+    monthSelectLayout.setOnClickListener {
+      monthPicker = MonthPicker.getInstance()
+      monthPicker?.setYearMonth(current.get(Calendar.YEAR), current.get(Calendar.MONTH) + 1)
+      monthPicker?.listener = dateSetListener
+      monthPicker?.show(supportFragmentManager,"");
+    }
 
-    viewModel.loadPromiseList()
+    viewModel.loadPromiseList(current.get(Calendar.YEAR), current.get(Calendar.MONTH) + 1)
   }
 
   private fun bindViewModel() {
-    viewModel.promiseList.observe(this, Observer { promiseList ->
+    viewModel.filteredList.observe(this, Observer { promiseList ->
       promiseList?.let {
+        mainPlaceHolderView.visibility = if (promiseList.isEmpty()) View.VISIBLE else View.GONE
         (promisesRecyclerView.adapter as PromisesRecyclerViewAdapter).setPromises(promiseList)
       }
     })
   }
 
+  private fun formatCurrent(calendar: Calendar) {
+    monthSelectTextView.text = SimpleDateFormat("yyyy.MM", Locale.KOREA).format(calendar.time)
+  }
+
   private inner class PromisesRecyclerViewAdapter(
     private val currentUserPhone: String
   ) : RecyclerView.Adapter<PromisesRecyclerViewAdapter.ViewHolder>() {
-    var promiseList: List<ListCatchUpPromisesByContactQuery.ListCatchUpPromisesByContact> = listOf()
+    private var promiseList = listOf<ListCatchUpPromisesByContactQuery.ListCatchUpPromisesByContact>()
 
     fun setPromises(list: List<ListCatchUpPromisesByContactQuery.ListCatchUpPromisesByContact>) {
       promiseList = list
       notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_promise, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+      = ViewHolder(LayoutInflater.from(this@MainActivity)
+      .inflate(R.layout.item_promise, parent, false))
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(promiseList[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+      holder.bind(promiseList[position])
+    }
 
     override fun getItemCount(): Int = promiseList.size
 
