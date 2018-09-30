@@ -12,6 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/action_bar_height"
         android:background="@color/dark_sky_blue"
+        app:left_first_image="@drawable/icon_back"
+        app:use_left_first="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -49,6 +51,7 @@
         android:text="수정"
         android:textColor="@color/dark_sky_blue"
         android:textSize="13sp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/promiseDetailDateTimeTextView"
         app:layout_constraintEnd_toEndOf="@+id/promiseDetailDateTimeTextView"
         app:layout_constraintTop_toTopOf="@+id/promiseDetailDateTimeTextView" />

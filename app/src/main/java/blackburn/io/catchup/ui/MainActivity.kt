@@ -201,7 +201,8 @@ class MainActivity : BaseActivity() {
 
         itemView.setOnClickListener {
           val intent = Intent(it.context, PromiseDetailActivity::class.java)
-          intent.putExtra("time", promise.dateTime())
+          intent.putExtra("name", promise.name())
+          intent.putExtra("dateTime", promise.dateTime())
           intent.putExtra("id", promise.id())
           startActivityForResult(intent, 100)
         }

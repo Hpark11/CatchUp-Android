@@ -63,14 +63,31 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     window.statusBarColor = resources.getColor(R.color.dark_sky_blue)
 
     id = intent.getStringExtra("id") ?: ""
-    val timestamp = intent.getStringExtra("timestamp") ?: ""
+    val name = intent.getStringExtra("name") ?: ""
 
     viewModel = ViewModelProviders.of(this, viewModelFactory)[PromiseDetailViewModel::class.java]
     bindViewModel()
 
-    promiseDetailActionBar.setCenterTextColor(resources.getColor(R.color.md_white_1000))
-    promiseDetailToggleButton.setOnClickListener { change() }
+    val fragmentTransaction = supportFragmentManager.beginTransaction()
+    fragmentTransaction.add(displayChangeLayout.id, promiseDetailMapFragment)
+    fragmentTransaction.add(displayChangeLayout.id, promiseDetailUsersFragment)
+    fragmentTransaction.commit()
     change()
+
+    checkPromiseInfo()
+
+    promiseDetailActionBar.setCenterText(name)
+    promiseDetailDateTimeTextView.text = SimpleDateFormat(
+      "MM.dd(EEEE) a hh시 mm분",
+      Locale.getDefault()
+    ).format(DateUtils.parseISO8601Date(intent.getStringExtra("dateTime")))
+
+    promiseDetailActionBar.setCenterTextColor(resources.getColor(R.color.md_white_1000))
+    promiseDetailActionBar.setFirstLeftButtonClickListener(View.OnClickListener {
+      finish()
+    })
+
+    promiseDetailToggleButton.setOnClickListener { change() }
 
     promiseDetailActionBar.setFirstLeftButtonClickListener(
       View.OnClickListener {
@@ -84,23 +101,33 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     }
 
     promiseDetailRefreshButton.setOnClickListener { view ->
-      if (isLocationServiceEnabled()) {
-        timestamp.toLongOrNull()?.let {
-          val current = Calendar.getInstance().timeInMillis
-
-          if (current >= (it - Define.ACTIVATE_PERIOD) && current <= it) {
-            viewModel.loadPromise(id)
-          } else {
-            Toast.makeText(this@PromiseDetailActivity, "약속 활성화 시간 (약속시간 두시간 이내)이 아니여서 친구들의 상태를 확인 할 수 없어요", Toast.LENGTH_LONG).show()
-          }
-        }
-
-      } else {
-        Toast.makeText(this@PromiseDetailActivity, "GPS를 켜지 않아 친구들의 위치정보를 확인할 수 없어요", Toast.LENGTH_LONG).show()
-      }
+      checkPromiseInfo()
     }
+  }
 
-    viewModel.loadPromise(id)
+  private fun checkPromiseInfo() {
+    val dateTime = intent.getStringExtra("dateTime") ?: ""
+
+    if (isLocationServiceEnabled() && dateTime.isNotEmpty()) {
+      val parsedDateTime = DateUtils.parseISO8601Date(dateTime)
+      val current = Calendar.getInstance().timeInMillis
+
+      if (current >= (parsedDateTime.time - Define.ACTIVATE_PERIOD) && current <= parsedDateTime.time) {
+        viewModel.loadPromise(id)
+      } else {
+        Toast.makeText(
+          this@PromiseDetailActivity,
+          "약속 활성화 시간 (약속시간 두시간 이내)이 아니여서 친구들의 상태를 확인 할 수 없어요",
+          Toast.LENGTH_LONG
+        ).show()
+      }
+    } else {
+      Toast.makeText(
+        this@PromiseDetailActivity,
+        "GPS를 켜지 않아 친구들의 위치정보를 확인할 수 없어요",
+        Toast.LENGTH_LONG
+      ).show()
+    }
   }
 
   private fun bindViewModel() {
@@ -125,7 +152,10 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     viewModel.contactList.observe(this, Observer { contacts ->
       promiseDetailMapFragment.updateContacts(contacts ?: listOf())
       promiseDetailUsersFragment.updateContacts(contacts ?: listOf())
+    })
 
+    viewModel.isOwner.observe(this, Observer { isOwner ->
+      promiseEditButton.visibility = if (isOwner == true) View.VISIBLE else View.GONE
     })
   }
 
@@ -141,7 +171,8 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
 
   private fun isLocationServiceEnabled(): Boolean {
     val manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    return manager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    return manager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+      manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
   }
 
   private fun change() {
@@ -149,17 +180,19 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
 
     when (currentDisplayType) {
       DisplayType.Map -> {
-        fragmentTransaction.replace(displayChangeLayout.id, promiseDetailMapFragment)
+        fragmentTransaction.show(promiseDetailMapFragment)
+        fragmentTransaction.hide(promiseDetailUsersFragment)
         promiseDetailToggleButton.setImageDrawable(resources.getDrawable(R.drawable.icon_toggle))
       }
       DisplayType.Users -> {
-        fragmentTransaction.replace(displayChangeLayout.id, promiseDetailUsersFragment)
+        fragmentTransaction.show(promiseDetailUsersFragment)
+        fragmentTransaction.hide(promiseDetailMapFragment)
         promiseDetailToggleButton.setImageDrawable(resources.getDrawable(R.drawable.icon_map))
       }
     }
 
     currentDisplayType = if (currentDisplayType == DisplayType.Map) DisplayType.Users else DisplayType.Map
-    fragmentTransaction.commitNow()
+    fragmentTransaction.commit()
   }
 
   private fun finishWithEditCheck() {

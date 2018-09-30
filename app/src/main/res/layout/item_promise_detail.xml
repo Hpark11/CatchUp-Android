@@ -6,10 +6,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="1dp"
+    android:layout_marginTop="4dp"
     android:layout_marginStart="@dimen/space_extended_long"
     android:layout_marginEnd="@dimen/space_extended_long"
-    android:layout_marginBottom="@dimen/space_extended_long"
+    android:layout_marginBottom="@dimen/space_long"
     app:cardCornerRadius="@dimen/space_mid"
     android:divider="@android:color/transparent"
     android:dividerHeight="0.0px"
@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:src="@drawable/image_place_holder"/>
+                android:src="@drawable/profile_default"/>
         </android.support.v7.widget.CardView>
 
         <LinearLayout
@@ -73,6 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="22분 전"
+            android:layout_marginEnd="@dimen/space_short"
             android:textColor="@color/md_blue_400"
             android:layout_gravity="center_vertical"/>
 

@@ -100,19 +100,6 @@ class PromiseDetailMembersFragment: BaseFragment() {
             .negativeText(R.string.cancel)
             .inputRangeRes(2, 80, R.color.dark_sky_blue)
             .input(null, null) { dialog, input ->
-//              App.apolloClient.query(
-//                SendPushQuery.builder()
-//                  .pushTokens(itemList.mapNotNull { if (it.pushToken.isEmpty()) null else it.pushToken })
-//                  .title("친구로부터 알림")
-//                  .body(input.toString())
-//                  .build()
-//              ).enqueue(object : ApolloCall.Callback<SendPushQuery.Data>() {
-//                override fun onResponse(response: Response<SendPushQuery.Data>) {
-//                }
-//
-//                override fun onFailure(e: ApolloException) {
-//                }
-//              })
             }.show()
         }
 
@@ -136,7 +123,7 @@ class PromiseDetailMembersFragment: BaseFragment() {
           itemView.dueTimeTextView.text = "행방불명"
           itemView.dueTimeTextView.setTextColor(resources.getColor(R.color.warm_pink))
           itemView.expectedTimeTextView.text = "GPS 차단 중"
-        } else if (distance <= Define.DISTANCE_UPPERBOUND) {
+        } else if (distance <= Define.DISTANCE_LOWERBOUND) {
           itemView.dueTimeTextView.text = "도착"
           itemView.dueTimeTextView.setTextColor(resources.getColor(R.color.warm_pink))
           itemView.expectedTimeTextView.text = String.format("약 %.2f km", distance / 1000f)

@@ -34,7 +34,7 @@ class PromiseDetailMapFragment : BaseFragment() {
   private val currentMemberMarkers = mutableMapOf<String, Marker>()
 
   private var promiseName = ""
-  private var placeInfo = PlaceInfo("대한민국 서울", 37.56, 126.97)
+  private var placeInfo: PlaceInfo? = null
   private var contactList = listOf<BatchGetCatchUpContactsQuery.BatchGetCatchUpContact>()
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -59,14 +59,16 @@ class PromiseDetailMapFragment : BaseFragment() {
     return view
   }
 
-  fun updateDestination(name: String, place: PlaceInfo) {
+  fun updateDestination(name: String, place: PlaceInfo?) {
     placeInfo = place
     promiseName = name
 
     googleMap?.let {
-      setDestination(
-        createMarker(name, place.address, place.latitude, place.longitude)
-      )
+      placeInfo?.let { place ->
+        setDestination(
+          createMarker(name, place.address, place.latitude, place.longitude)
+        )
+      }
     }
   }
 
