@@ -32,7 +32,7 @@ class PromiseDetailViewModel @Inject constructor(
         } ?: listOf()
 
         return@switchMap data.requestContacts(list)
-      }.subscribeBy(
+      }.compose(scheduler.forObservable()).subscribeBy(
         onNext = { response ->
           response.data()?.batchGetCatchUpContacts()?.let { contacts ->
             contactList.value = contacts

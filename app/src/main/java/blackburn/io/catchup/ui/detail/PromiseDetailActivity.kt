@@ -72,7 +72,8 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     promiseDetailToggleButton.setOnClickListener { change() }
     change()
 
-    promiseDetailActionBar.setFirstLeftButtonClickListener(View.OnClickListener {
+    promiseDetailActionBar.setFirstLeftButtonClickListener(
+      View.OnClickListener {
       finishWithEditCheck()
     })
 
@@ -158,7 +159,7 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     }
 
     currentDisplayType = if (currentDisplayType == DisplayType.Map) DisplayType.Users else DisplayType.Map
-    fragmentTransaction.commit()
+    fragmentTransaction.commitNow()
   }
 
   private fun finishWithEditCheck() {

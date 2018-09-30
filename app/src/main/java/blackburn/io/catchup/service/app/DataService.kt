@@ -20,6 +20,7 @@ import io.reactivex.Flowable
 import io.reactivex.BackpressureStrategy
 import type.CatchUpPromiseInput
 import type.CatchUpUserInput
+import type.ContactCreateInput
 import type.ContactUpdateInput
 
 
@@ -285,6 +286,22 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
 
   fun useCredit(id: String): Observable<Response<UseCreditMutation.Data>> {
     return from(UseCreditMutation.builder().id(id).build())
+  }
+
+  fun batchCreateContacts(phoneList: List<String>, nicknameList: List<String>)
+    : Observable<Response<BatchCreateCatchUpContactMutation.Data>> {
+    val contactCreateInputList = mutableListOf<ContactCreateInput>()
+
+    for(i in 0 until phoneList.size) {
+      if (nicknameList.size == i) break
+      contactCreateInputList.add(
+        ContactCreateInput.builder().phone(phoneList[i]).nickname(nicknameList[i]).build()
+      )
+    }
+
+    return from(
+      BatchCreateCatchUpContactMutation.builder().contacts(contactCreateInputList).build()
+    )
   }
 
   class QueryException(queryName: String?): Exception(queryName)

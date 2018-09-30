@@ -95,14 +95,31 @@ class NewPromiseViewModel @Inject constructor(
           throw DataService.QueryException("Invalid User")
         }
       }.compose(scheduler.forObservable()).switchMap {
-        return@switchMap data.useCredit(it.data()?.catchUpUser?.id() ?: "")
+        val userId = it.data()?.catchUpUser?.id() ?: ""
+        return@switchMap data.useCredit(userId)
+
+      }.switchMap {
+        return@switchMap data.requestContacts(contacts.value ?: listOf())
+
+      }.map { response ->
+        val registered = response.data()?.batchGetCatchUpContacts()?.mapNotNull {
+          it.phone()
+        }?.toSet() ?: setOf()
+
+        return@map contacts.value?.filterNot { registered.contains(it) }
+
+      }.compose(scheduler.forObservable()).switchMap { unregisteredUsers ->
+        return@switchMap data.batchCreateContacts(
+          unregisteredUsers, unregisteredUsers.map { "아는사람" }
+        )
       }.compose(scheduler.forObservable()).switchMap { response ->
-        val phone = response.data()?.useCredit()?.phone()
+        val phone = pref.phone
         val members = mutableListOf<String>()
 
-        if (phone == null) {
+        if (phone.isEmpty()) {
           throw PhoneNotFoundException("Invalid PhoneNumber")
         } else {
+
           members.add(phone)
           members.addAll(0, contacts.value ?: listOf())
 
@@ -166,8 +183,6 @@ class NewPromiseViewModel @Inject constructor(
       )
     }
   }
-
-
 
   class CreditRunoutException(message: String) : Exception(message)
   class PhoneNotFoundException(message: String) : Exception(message)

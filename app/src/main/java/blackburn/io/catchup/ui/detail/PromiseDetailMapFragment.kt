@@ -33,6 +33,10 @@ class PromiseDetailMapFragment : BaseFragment() {
   private var destinationMarker: Marker? = null
   private val currentMemberMarkers = mutableMapOf<String, Marker>()
 
+  private var promiseName = ""
+  private var placeInfo = PlaceInfo("대한민국 서울", 37.56, 126.97)
+  private var contactList = listOf<BatchGetCatchUpContactsQuery.BatchGetCatchUpContact>()
+
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     val view = inflater.inflate(R.layout.fragment_promise_detail_map, container, false)
 
@@ -48,20 +52,18 @@ class PromiseDetailMapFragment : BaseFragment() {
     view.promiseDetailMapView.getMapAsync {
       googleMap = it
 
-      val seoul = LatLng(37.56, 126.97)
-      val markerOptions = MarkerOptions()
-      markerOptions.position(seoul)
-      markerOptions.title("서울")
-      markerOptions.snippet("한국의 수도")
-      googleMap?.moveCamera(CameraUpdateFactory.newLatLng(seoul))
-      googleMap?.animateCamera(CameraUpdateFactory.zoomTo(10f))
+      updateDestination(promiseName, placeInfo)
+      updateContacts(contactList)
     }
 
     return view
   }
 
   fun updateDestination(name: String, place: PlaceInfo) {
-    if (destinationMarker == null) {
+    placeInfo = place
+    promiseName = name
+
+    googleMap?.let {
       setDestination(
         createMarker(name, place.address, place.latitude, place.longitude)
       )
@@ -69,23 +71,25 @@ class PromiseDetailMapFragment : BaseFragment() {
   }
 
   fun updateContacts(contacts: List<BatchGetCatchUpContactsQuery.BatchGetCatchUpContact>) {
-    if (googleMap == null) return
+    contactList = contacts
 
-    contacts.forEach { contact ->
-      val phone = contact.phone()
-      val name = contact.nickname() ?: ""
-      val latitude = contact.latitude() ?: 0.0
-      val longitude = contact.longitude() ?: 0.0
-      val profileImagePath = contact.profileImagePath() ?: ""
+    googleMap?.let {
+      contacts.forEach { contact ->
+        val phone = contact.phone()
+        val name = contact.nickname() ?: ""
+        val latitude = contact.latitude() ?: 0.0
+        val longitude = contact.longitude() ?: 0.0
+        val profileImagePath = contact.profileImagePath() ?: ""
 
-      if (currentMemberMarkers[phone] == null) {
-        setCurrentMemberMarker(
-          phone,
-          profileImagePath,
-          createMarker(name, "", latitude, longitude)
-        )
-      } else {
-        currentMemberMarkers[phone]?.position = LatLng(latitude, longitude)
+        if (currentMemberMarkers[phone] == null) {
+          setCurrentMemberMarker(
+            phone,
+            profileImagePath,
+            createMarker(name, "", latitude, longitude)
+          )
+        } else {
+          currentMemberMarkers[phone]?.position = LatLng(latitude, longitude)
+        }
       }
     }
   }
@@ -97,12 +101,16 @@ class PromiseDetailMapFragment : BaseFragment() {
   }
 
   private fun setCurrentMemberMarker(phone: String, imagePath: String, markerOptions: MarkerOptions) {
-    googleMap?.addMarker(markerOptions)?.let {
+    googleMap?.addMarker(markerOptions)?.let { marker ->
+      val markerView = LayoutInflater.from(activity).inflate(R.layout.view_promise_marker, null)
+      marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmapFrom(markerView)))
+
       val target = object : SimpleTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-          val markerView = LayoutInflater.from(activity).inflate(R.layout.view_promise_marker, null)
           markerView.userProfileImageView.setImageBitmap(resource)
-          currentMemberMarkers[phone]?.setIcon(BitmapDescriptorFactory.fromBitmap(bitmapFrom(markerView)))
+          currentMemberMarkers[phone]?.setIcon(
+            BitmapDescriptorFactory.fromBitmap(bitmapFrom(markerView))
+          )
         }
       }
 
@@ -111,10 +119,10 @@ class PromiseDetailMapFragment : BaseFragment() {
         .load(imagePath)
         .apply(RequestOptions.bitmapTransform(CropCircleTransformation()))
         .override(80)
-        .placeholder(R.drawable.image_place_holder)
+        .placeholder(R.drawable.profile_default)
         .into(target)
 
-      currentMemberMarkers[phone] = it
+      currentMemberMarkers[phone] = marker
     }
   }
 

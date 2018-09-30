@@ -24,7 +24,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/promiseDetailActionBar" />
+        app:layout_constraintTop_toBottomOf="@id/promiseDetailDateTimeTextView" />
 
     <TextView
         android:id="@+id/promiseDetailDateTimeTextView"
@@ -36,7 +36,7 @@
         android:textColor="@color/slate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/displayChangeLayout"
+        app:layout_constraintTop_toBottomOf="@+id/promiseDetailActionBar"
         tools:text="07.23(월) 오후 7시 30분" />
 
     <TextView

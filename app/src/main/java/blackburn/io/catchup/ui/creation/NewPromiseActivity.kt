@@ -91,6 +91,10 @@ class NewPromiseActivity : BaseActivity() {
       adapter = SelectedMembersRecyclerViewAdapter()
     }
 
+    newPromiseActionBar.setFirstLeftButtonClickListener(View.OnClickListener {
+      finish()
+    })
+
     promiseNameInputView.setOnClickListener {
       MaterialDialog.Builder(this)
         .title("이름 짓기")
