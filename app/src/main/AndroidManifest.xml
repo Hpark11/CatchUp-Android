@@ -24,16 +24,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".ui.MainActivity" />
-        <activity android:name=".ui.entrance.EntranceActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".ui.entrance.PermissionsActivity" />
-
         <service
             android:name=".service.android.PushTokenService"
             android:stopWithTask="false">
@@ -43,6 +33,16 @@
         </service>
 
         <service android:name=".service.android.LocationTrackingService" />
+
+        <activity android:name=".ui.MainActivity" />
+        <activity android:name=".ui.entrance.EntranceActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.entrance.PermissionsActivity" />
 
         <activity android:name=".ui.creation.NewPromiseActivity">
             <intent-filter>

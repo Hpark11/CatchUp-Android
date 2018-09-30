@@ -7,8 +7,14 @@ import javax.inject.Inject
 
 class PushTokenService: FirebaseMessagingService() {
 
+  override fun onCreate() {
+    super.onCreate()
+    val b = 2
+  }
+
   override fun onNewToken(token: String?) {
     super.onNewToken(token)
+    val a = token
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage?) {

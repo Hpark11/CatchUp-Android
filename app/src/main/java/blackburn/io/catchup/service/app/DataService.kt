@@ -141,6 +141,14 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
     return from(ListCatchUpPromisesByContactQuery.builder().contact(phone).build())
   }
 
+  fun relocateContact(phone: String, latitude: Double, longitude: Double)
+    : Observable<Response<RelocateCatchUpContactMutation.Data>> {
+    return from(
+      RelocateCatchUpContactMutation.builder()
+        .phone(phone).latitude(latitude).longitude(longitude).build()
+    )
+  }
+
   fun updateUser(
     id: String,
     phone: String?,
@@ -164,7 +172,8 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
           .birthday(birthday)
           .credit(credit)
           .build())
-        .build())
+        .build()
+    )
   }
 
   fun createUser(
@@ -189,7 +198,8 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
           .birthday(birthday)
           .credit(0)
           .build())
-        .build())
+        .build()
+    )
   }
 
   fun updateContact(
@@ -207,7 +217,8 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
           .osType(osType)
           .pushToken(pushToken)
           .build())
-        .build())
+        .build()
+    )
   }
 
   fun attachToken(

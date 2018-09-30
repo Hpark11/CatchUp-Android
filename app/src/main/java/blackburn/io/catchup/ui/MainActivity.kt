@@ -6,6 +6,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.arch.lifecycle.Observer
+import android.content.Context
+import android.location.LocationManager
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -18,10 +21,13 @@ import blackburn.io.catchup.app.BaseActivity
 import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.app.util.plusAssign
 import blackburn.io.catchup.di.module.GlideApp
+import blackburn.io.catchup.service.android.LocationTrackingService
 import blackburn.io.catchup.ui.common.MonthPicker
 import blackburn.io.catchup.ui.creation.NewPromiseActivity
 import blackburn.io.catchup.ui.detail.PromiseDetailActivity
 import com.amazonaws.amplify.generated.graphql.ListCatchUpPromisesByContactQuery
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_member_selected_min.view.*
@@ -39,6 +45,7 @@ class MainActivity : BaseActivity() {
 
   private var monthPicker: MonthPicker? = null
   private val current = Calendar.getInstance()
+  private var isServiceRunning = false
 
   private val dateSetListener = DatePickerDialog.OnDateSetListener { datePicker, year, month, day ->
     current.set(Calendar.YEAR, year)
@@ -75,6 +82,48 @@ class MainActivity : BaseActivity() {
     }
 
     viewModel.loadPromiseList(current.get(Calendar.YEAR), current.get(Calendar.MONTH) + 1)
+
+    statusCheck()
+
+    if (isGooglePlayServicesAvailable()) {
+      if (!isServiceRunning) {
+//        stopService(Intent())
+        val intent = Intent(this@MainActivity, LocationTrackingService::class.java)
+        startService(intent)
+        isServiceRunning = true
+      }
+    }
+  }
+
+  private fun statusCheck() {
+    val manager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+      AlertDialog.Builder(this)
+        .setMessage("예정 2시간 이내의 모임약속 정보를 확인하기 위해서는 친구들과의 GPS로 위치공유가 필요하니 켜두세요~ \n" +
+          "(약속 2시간 이내가 아닌 시간에는 절대 위치 추적을 하지 않을거에요)")
+        .setCancelable(false)
+        .setPositiveButton("Yes") { dialog, id ->
+          startActivity(Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+        }
+        .setNegativeButton("No") { dialog, id ->
+          dialog.cancel()
+        }
+        .create()
+        .show()
+    }
+  }
+
+  private fun isGooglePlayServicesAvailable(): Boolean {
+    val googleApiAvailability = GoogleApiAvailability.getInstance()
+    val status = googleApiAvailability.isGooglePlayServicesAvailable(this)
+    if (status != ConnectionResult.SUCCESS) {
+      if (googleApiAvailability.isUserResolvableError(status)) {
+        googleApiAvailability.getErrorDialog(this, status, 2404).show()
+      }
+      return false
+    }
+    return true
   }
 
   private fun bindViewModel() {
