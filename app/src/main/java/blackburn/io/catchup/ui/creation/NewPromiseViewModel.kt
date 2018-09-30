@@ -3,6 +3,7 @@ package blackburn.io.catchup.ui.creation
 import android.arch.lifecycle.MutableLiveData
 import blackburn.io.catchup.app.BaseViewModel
 import blackburn.io.catchup.model.Contact
+import blackburn.io.catchup.model.PlaceInfo
 import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.service.app.SchedulerUtil
 import blackburn.io.catchup.service.app.SharedPrefService
@@ -166,7 +167,7 @@ class NewPromiseViewModel @Inject constructor(
     }
   }
 
-  data class PlaceInfo(val address: String, val latitude: Double, val longitude: Double)
+
 
   class CreditRunoutException(message: String) : Exception(message)
   class PhoneNotFoundException(message: String) : Exception(message)

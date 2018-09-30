@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="1dp"
+    android:layout_marginStart="@dimen/space_extended_long"
+    android:layout_marginEnd="@dimen/space_extended_long"
+    android:layout_marginBottom="@dimen/space_extended_long"
+    app:cardCornerRadius="@dimen/space_mid"
+    android:divider="@android:color/transparent"
+    android:dividerHeight="0.0px"
+    android:clipToPadding="false"
+    android:clipChildren="false"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="@color/md_white_1000">
+
+    <LinearLayout
+        android:id="@+id/userInfoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        android:background="@drawable/background_promise_card"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:cardCornerRadius="20dp"
+            android:layout_gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/profileImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/image_place_holder"/>
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_extreme_long"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/nicknameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/md_grey_800"
+                android:layout_marginBottom="@dimen/space_short"
+                tools:text="홍길동" />
+
+            <TextView
+                android:id="@+id/expectedTimeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="오후 6시 20분"
+                android:textSize="13sp"
+                android:textColor="@color/md_grey_400" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dueTimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="22분 전"
+            android:textColor="@color/md_blue_400"
+            android:layout_gravity="center_vertical"/>
+
+        <ImageView
+            android:id="@+id/notifyPromiseButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/icon_talk"
+            android:layout_marginStart="@dimen/space_extreme_long"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>

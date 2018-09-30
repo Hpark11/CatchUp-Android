@@ -11,7 +11,8 @@ import android.view.ViewGroup
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseFragment
 import blackburn.io.catchup.di.module.GlideApp
-import com.amazonaws.amplify.generated.graphql.GetCatchUpPromiseQuery
+import blackburn.io.catchup.model.PlaceInfo
+import com.amazonaws.amplify.generated.graphql.BatchGetCatchUpContactsQuery
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
@@ -26,7 +27,7 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation
 import kotlinx.android.synthetic.main.fragment_promise_detail_map.view.*
 import kotlinx.android.synthetic.main.view_promise_marker.view.*
 
-class PromiseDetailMapFragment: BaseFragment() {
+class PromiseDetailMapFragment : BaseFragment() {
 
   private var googleMap: GoogleMap? = null
   private var destinationMarker: Marker? = null
@@ -59,41 +60,34 @@ class PromiseDetailMapFragment: BaseFragment() {
     return view
   }
 
-  fun updateCurrentInfo(promise: GetCatchUpPromiseQuery.GetCatchUpPromise) {
+  fun updateDestination(name: String, place: PlaceInfo) {
+    if (destinationMarker == null) {
+      setDestination(
+        createMarker(name, place.address, place.latitude, place.longitude)
+      )
+    }
+  }
+
+  fun updateContacts(contacts: List<BatchGetCatchUpContactsQuery.BatchGetCatchUpContact>) {
     if (googleMap == null) return
 
-//    promise?.let {
-//      if (destinationMarker == null) {
-//        setDestination(
-//          createMarker(
-//            it.name() ?: "",
-//            it.address() ?: "",
-//            it.latitude() ?: 0.0,
-//            it.longitude() ?: 0.0
-//          )
-//        )
-//      }
-//
-//      if (currentMemberMarkers.isEmpty()) {
-//        it.pockets()?.forEach {
-//          setCurrentMemberMarker(
-//            it.profileImagePath() ?: "",
-//            createMarker(
-//              it.nickname() ?: "",
-//              "",
-//              it.latitude() ?: 0.0,
-//              it.longitude() ?: 0.0
-//            )
-//          )
-//        }
-//      } else {
-//        it.pockets()?.forEach { pocket ->
-//          currentMemberMarkers[pocket.profileImagePath()]?.let {
-//            it.position = LatLng(pocket.latitude() ?: 0.0, pocket.longitude() ?: 0.0)
-//          }
-//        }
-//      }
-//    }
+    contacts.forEach { contact ->
+      val phone = contact.phone()
+      val name = contact.nickname() ?: ""
+      val latitude = contact.latitude() ?: 0.0
+      val longitude = contact.longitude() ?: 0.0
+      val profileImagePath = contact.profileImagePath() ?: ""
+
+      if (currentMemberMarkers[phone] == null) {
+        setCurrentMemberMarker(
+          phone,
+          profileImagePath,
+          createMarker(name, "", latitude, longitude)
+        )
+      } else {
+        currentMemberMarkers[phone]?.position = LatLng(latitude, longitude)
+      }
+    }
   }
 
   private fun setDestination(markerOptions: MarkerOptions) {
@@ -102,13 +96,13 @@ class PromiseDetailMapFragment: BaseFragment() {
     googleMap?.animateCamera(CameraUpdateFactory.zoomTo(10f))
   }
 
-  private fun setCurrentMemberMarker(imagePath: String, markerOptions: MarkerOptions) {
+  private fun setCurrentMemberMarker(phone: String, imagePath: String, markerOptions: MarkerOptions) {
     googleMap?.addMarker(markerOptions)?.let {
-      val target = object: SimpleTarget<Bitmap>() {
+      val target = object : SimpleTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
           val markerView = LayoutInflater.from(activity).inflate(R.layout.view_promise_marker, null)
           markerView.userProfileImageView.setImageBitmap(resource)
-          currentMemberMarkers[imagePath]?.setIcon(BitmapDescriptorFactory.fromBitmap(bitmapFrom(markerView)))
+          currentMemberMarkers[phone]?.setIcon(BitmapDescriptorFactory.fromBitmap(bitmapFrom(markerView)))
         }
       }
 
@@ -120,7 +114,7 @@ class PromiseDetailMapFragment: BaseFragment() {
         .placeholder(R.drawable.image_place_holder)
         .into(target)
 
-      currentMemberMarkers[imagePath] = it
+      currentMemberMarkers[phone] = it
     }
   }
 

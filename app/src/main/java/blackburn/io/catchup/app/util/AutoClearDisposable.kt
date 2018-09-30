@@ -2,13 +2,14 @@ package blackburn.io.catchup.app.util
 
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
+import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.OnLifecycleEvent
 import android.support.v7.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-class AutoClearDisposable(
-  private val lifecycleOwner: AppCompatActivity,
+class AutoClearDisposable<L: LifecycleOwner>(
+  private val lifecycleOwner: L,
   private val clearOnStop: Boolean = true,
   private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 ): LifecycleObserver {
@@ -20,9 +21,7 @@ class AutoClearDisposable(
 
   @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
   fun clear() {
-    if (!clearOnStop && !lifecycleOwner.isFinishing) {
-      return
-    }
+    if (!clearOnStop) { return }
     compositeDisposable.clear()
   }
 

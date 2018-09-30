@@ -5,6 +5,7 @@ import blackburn.io.catchup.app.BaseViewModel
 import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.service.app.SchedulerUtil
 import blackburn.io.catchup.ui.creation.NewPromiseViewModel
+import com.amazonaws.amplify.generated.graphql.BatchGetCatchUpContactsQuery
 import com.amazonaws.amplify.generated.graphql.GetCatchUpPromiseQuery
 import com.amazonaws.util.DateUtils
 import io.reactivex.rxkotlin.plusAssign
@@ -14,20 +15,32 @@ import javax.inject.Inject
 class PromiseDetailViewModel @Inject constructor(
   private val scheduler: SchedulerUtil,
   private val data: DataService
-): BaseViewModel() {
+) : BaseViewModel() {
 
   val promiseDetail: MutableLiveData<GetCatchUpPromiseQuery.GetCatchUpPromise> = MutableLiveData()
+  val contactList: MutableLiveData<List<BatchGetCatchUpContactsQuery.BatchGetCatchUpContact>> = MutableLiveData()
 
   fun loadPromise(id: String) {
-    compositeDisposable += data.requestPromise(id).compose(scheduler.forObservable()).subscribeBy(
-      onNext = { response ->
+    compositeDisposable += data.requestPromise(id).compose(scheduler.forObservable())
+      .doOnNext { response ->
         response.data()?.catchUpPromise?.let { promise ->
           promiseDetail.value = promise
         }
-      },
-      onError = {
-        it.printStackTrace()
-      }
-    )
+      }.switchMap { response ->
+        val list = response.data()?.catchUpPromise?.contacts()?.mapNotNull {
+          return@mapNotNull it
+        } ?: listOf()
+
+        return@switchMap data.requestContacts(list)
+      }.subscribeBy(
+        onNext = { response ->
+          response.data()?.batchGetCatchUpContacts()?.let { contacts ->
+            contactList.value = contacts
+          }
+        },
+        onError = {
+          it.printStackTrace()
+        }
+      )
   }
 }

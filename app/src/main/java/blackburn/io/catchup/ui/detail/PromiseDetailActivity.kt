@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_promise_detail.*
 import java.util.*
 import javax.inject.Inject
 import android.arch.lifecycle.Observer
+import blackburn.io.catchup.model.PlaceInfo
 import com.amazonaws.util.DateUtils
 import java.text.SimpleDateFormat
 
@@ -34,13 +35,6 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     Users
   }
 
-  private var currentDisplayType = DisplayType.Map
-  private val promiseDetailMapFragment = PromiseDetailMapFragment()
-  private val promiseDetailUsersFragment = PromiseDetailMembersFragment()
-
-  private lateinit var id: String
-  private var isEditOccurred = false
-
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -52,6 +46,13 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
   override fun supportFragmentInjector(): AndroidInjector<Fragment> {
     return fragmentInjector
   }
+
+  private var currentDisplayType = DisplayType.Map
+  private val promiseDetailMapFragment = PromiseDetailMapFragment()
+  private val promiseDetailUsersFragment = PromiseDetailMembersFragment()
+
+  private var isEditOccurred = false
+  private lateinit var id: String
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -81,15 +82,13 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
       startActivityForResult(intent, 100)
     }
 
-    updateCurrentInfo(true)
-
     promiseDetailRefreshButton.setOnClickListener { view ->
       if (isLocationServiceEnabled()) {
         timestamp.toLongOrNull()?.let {
           val current = Calendar.getInstance().timeInMillis
 
           if (current >= (it - Define.ACTIVATE_PERIOD) && current <= it) {
-            updateCurrentInfo(false)
+            viewModel.loadPromise(id)
           } else {
             Toast.makeText(this@PromiseDetailActivity, "약속 활성화 시간 (약속시간 두시간 이내)이 아니여서 친구들의 상태를 확인 할 수 없어요", Toast.LENGTH_LONG).show()
           }
@@ -99,23 +98,33 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
         Toast.makeText(this@PromiseDetailActivity, "GPS를 켜지 않아 친구들의 위치정보를 확인할 수 없어요", Toast.LENGTH_LONG).show()
       }
     }
+
+    viewModel.loadPromise(id)
   }
 
   private fun bindViewModel() {
     viewModel.promiseDetail.observe(this, Observer { promise ->
-      promiseDetailActionBar.setCenterText(promise?.name() ?: "")
+      val name = promise?.name() ?: ""
+      val address = promise?.address() ?: ""
+      val latitude = promise?.latitude() ?: 0.0
+      val longitude = promise?.longitude() ?: 0.0
+
+      promiseDetailActionBar.setCenterText(name)
 
       promiseDetailDateTimeTextView.text = SimpleDateFormat(
         "MM.dd(EEEE) a hh시 mm분",
         Locale.getDefault()
       ).format(DateUtils.parseISO8601Date(promise?.dateTime()))
 
-//      val timestamp = (response.data()?.promise()?.timestamp() ?: "0").toLong()
-//      val calendar = Calendar.getInstance()
-//      calendar.timeInMillis = timestamp
+      promiseDetailActionBar.setCenterText(name)
+      promiseDetailMapFragment.updateDestination(name, PlaceInfo(address, latitude, longitude))
+      promiseDetailUsersFragment.updateDestination(PlaceInfo(address, latitude, longitude))
+    })
 
-//      promiseDetailMapFragment.updateCurrentInfo(response.data()?.promise())
-//      promiseDetailUsersFragment.updateCurrentInfo(response.data()?.promise())
+    viewModel.contactList.observe(this, Observer { contacts ->
+      promiseDetailMapFragment.updateContacts(contacts ?: listOf())
+      promiseDetailUsersFragment.updateContacts(contacts ?: listOf())
+
     })
   }
 
@@ -123,35 +132,10 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     super.onActivityResult(requestCode, resultCode, data)
     when (resultCode) {
       NewPromiseActivity.RESULT_CODE_PROMISE_EDITED -> {
-        updateCurrentInfo(true)
+        viewModel.loadPromise(id)
         isEditOccurred = true
       }
     }
-  }
-
-  private fun updateCurrentInfo(isInit: Boolean) {
-//    App.apolloClient.query(
-//      GetPromiseQuery.builder().id(id).build()
-//    ).enqueue(object: ApolloCall.Callback<GetPromiseQuery.Data>() {
-//      override fun onResponse(response: Response<GetPromiseQuery.Data>) {
-//
-//        runOnUiThread {
-//          promiseDetailActionBar.setCenterText(response.data()?.promise()?.name() ?: "")
-//
-//          val timestamp = (response.data()?.promise()?.timestamp() ?: "0").toLong()
-//          val calendar = Calendar.getInstance()
-//          calendar.timeInMillis = timestamp
-//
-//          promiseDetailDateTimeTextView.text = SimpleDateFormat("MM.dd(EEEE) a hh시 mm분", Locale.getDefault()).format(calendar.time)
-//          promiseDetailMapFragment.updateCurrentInfo(response.data()?.promise())
-//          promiseDetailUsersFragment.updateCurrentInfo(response.data()?.promise())
-//        }
-//      }
-//
-//      override fun onFailure(e: ApolloException) {
-//        e.printStackTrace()
-//      }
-//    })
   }
 
   private fun isLocationServiceEnabled(): Boolean {

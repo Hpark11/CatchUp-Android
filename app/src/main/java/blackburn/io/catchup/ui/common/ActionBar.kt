@@ -181,8 +181,8 @@ class ActionBar: LinearLayout {
       view.secondRightSideBarTextButton.text = value
     }
 
-  fun setCenterText(text: String) {
-    view.centerTextView.setText(text)
+  fun setCenterText(text: String?) {
+    view.centerTextView.text = text
   }
 
   fun setCenterTextColor(color: Int) {

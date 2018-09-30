@@ -24,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import blackburn.io.catchup.app.util.plusAssign
 import blackburn.io.catchup.di.module.GlideApp
+import blackburn.io.catchup.model.PlaceInfo
 import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.ui.common.PromiseInputView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -232,7 +233,7 @@ class NewPromiseActivity : BaseActivity() {
       MapSearchActivity.RESULT_CODE_SET_ADDRESS -> {
         data?.let {
           viewModel.placeInput.onNext(
-            NewPromiseViewModel.PlaceInfo(
+            PlaceInfo(
               it.getStringExtra("address"),
               it.getDoubleExtra("latitude", 0.0),
               it.getDoubleExtra("longitude", 0.0)

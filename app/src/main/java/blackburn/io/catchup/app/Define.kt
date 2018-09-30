@@ -15,4 +15,10 @@ object Define {
   const val DIFF_MINUTES = (60 * 1000)
 
   const val ACTIVATE_PERIOD = 7200000
+
+  const val DISTANCE_UPPERBOUND = 150000
+  const val DISTANCE_LOWERBOUND = 200
+
+  const val DEFAULT_LATITUDE = 0.0
+  const val DEFAULT_LONGITUDE = 0.0
 }
