@@ -42,4 +42,11 @@
     <string name="promise_confirm_title_edit">약속 수정 완료</string>
 
     <string name="error_message_datetime_select">일시 선택 오류</string>
+
+    <string name="default_notification_channel_id" translatable="false">blackburn.io.catchup.default_notification_channel_id</string>
+    <string name="data_type">data_type</string>
+    <string name="direct_message">direct_message</string>
+    <string name="data_message">message</string>
+    <string name="data_title">title</string>
+    <string name="data_message_id">message_id</string>
 </resources>

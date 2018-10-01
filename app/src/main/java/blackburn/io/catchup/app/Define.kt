@@ -21,4 +21,10 @@ object Define {
 
   const val DEFAULT_LATITUDE = 0.0
   const val DEFAULT_LONGITUDE = 0.0
+
+  const val FIELD_TITLE = "title"
+  const val FIELD_PUSH_TOKENS= "pushTokens"
+  const val FIELD_MESSAGE = "message"
+
+  const val COLLECTION_MESSAGES = "messages"
 }

@@ -78,8 +78,7 @@ class LocationTrackingService: DaggerService() {
         compositeDisposable += dataService.relocateContact(prefService.phone, location.latitude, location.longitude)
           .subscribeBy(
             onNext = {
-              val a = 2
-              Log.e("LOCATION TRACKING", "${location.latitude} ${location.longitude}")
+              Log.d("LOCATION TRACKING", "${location.latitude} ${location.longitude}")
             },
             onError = {
               it.printStackTrace()

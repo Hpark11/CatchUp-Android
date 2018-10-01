@@ -22,11 +22,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.app.util.plusAssign
 import blackburn.io.catchup.di.module.GlideApp
 import blackburn.io.catchup.model.PlaceInfo
 import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.ui.common.PromiseInputView
+import com.google.firebase.firestore.FirebaseFirestore
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.item_member_selected.view.*
@@ -142,6 +144,9 @@ class NewPromiseActivity : BaseActivity() {
       if (id != null) {
         disposable += viewModel.editPromise(id).observeOn(AndroidSchedulers.mainThread()).subscribeBy(
           onSuccess = { data ->
+            data.updateCatchUpPromise()?.let { promise ->
+              notify(true, promise.contacts() ?: listOf())
+            }
             confirmPromise(id)
           },
           onError = {
@@ -153,7 +158,10 @@ class NewPromiseActivity : BaseActivity() {
         )
       } else {
         disposable += viewModel.makePromise().observeOn(AndroidSchedulers.mainThread()).subscribeBy(
-          onSuccess = {
+          onSuccess = { data ->
+            data.createCatchUpPromise()?.let { promise ->
+              notify(false, promise.contacts() ?: listOf())
+            }
             confirmPromise()
           },
           onError = {
@@ -173,6 +181,28 @@ class NewPromiseActivity : BaseActivity() {
         )
       }
     }
+  }
+
+  private fun notify(isEdit: Boolean, contacts: List<String>) {
+    val dataMap = mutableMapOf<String, Any>()
+    dataMap[Define.FIELD_TITLE] = if (isEdit) "변경된 약속 알림" else "새로운 약속 알림"
+    dataMap[Define.FIELD_MESSAGE] = "일시: ${promiseDateInputView.text}, 장소: ${promiseAddressInputView.text}"
+
+    disposable += viewModel.loadContacts(contacts).observeOn(AndroidSchedulers.mainThread())
+      .subscribeBy(
+        onSuccess = { contactList ->
+          dataMap[Define.FIELD_PUSH_TOKENS] = contactList.mapNotNull { it.pushToken() }
+
+          FirebaseFirestore.getInstance().collection(Define.COLLECTION_MESSAGES)
+            .document(UUID.randomUUID().toString()).set(dataMap)
+            .addOnSuccessListener {
+              Toast.makeText(this@NewPromiseActivity, "알림 메세지를 보냈어요", Toast.LENGTH_LONG).show()
+            }
+            .addOnFailureListener {
+              Toast.makeText(this@NewPromiseActivity, "전송 오류", Toast.LENGTH_LONG).show()
+            }
+        }
+      )
   }
 
   private fun bindViewModel() {

@@ -54,6 +54,7 @@ class EntranceViewModel @Inject constructor(
   ) {
     compositeDisposable += data.requestUser(id).compose(scheduler.forObservable()).switchMap {
       pref.userId = id
+      pref.nickname = nickname ?: "None"
 
       if (it.data()?.catchUpUser?.id().isNullOrEmpty()) {
         return@switchMap data.createUser(

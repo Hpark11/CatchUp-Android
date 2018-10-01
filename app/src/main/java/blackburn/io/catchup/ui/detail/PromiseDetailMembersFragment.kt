@@ -18,17 +18,23 @@ import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.app.util.plusAssign
 import blackburn.io.catchup.di.module.GlideApp
 import blackburn.io.catchup.model.PlaceInfo
+import blackburn.io.catchup.service.app.SharedPrefService
 import com.afollestad.materialdialogs.MaterialDialog
 import com.amazonaws.amplify.generated.graphql.BatchGetCatchUpContactsQuery
+import com.google.firebase.firestore.FirebaseFirestore
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.fragment_promise_detail_members.view.*
 import kotlinx.android.synthetic.main.item_promise_detail.view.*
+import java.util.*
 import javax.inject.Inject
 
 class PromiseDetailMembersFragment: BaseFragment() {
 
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
+
+  @Inject
+  lateinit var sharedPrefService: SharedPrefService
 
   private lateinit var viewModel: PromiseDetailMembersViewModel
 
@@ -70,6 +76,22 @@ class PromiseDetailMembersFragment: BaseFragment() {
     return locationFrom.distanceTo(destination)
   }
 
+  private fun notify(token: String, message: String) {
+    val dataMap = mutableMapOf<String, Any>()
+    dataMap[Define.FIELD_TITLE] = "${sharedPrefService.nickname}로부터 알림"
+    dataMap[Define.FIELD_PUSH_TOKENS] = listOf(token)
+    dataMap[Define.FIELD_MESSAGE] = message
+
+    FirebaseFirestore.getInstance().collection(Define.COLLECTION_MESSAGES)
+      .document(UUID.randomUUID().toString()).set(dataMap)
+      .addOnSuccessListener {
+        Toast.makeText(this.requireContext(), "알림 메세지를 보냈어요", Toast.LENGTH_LONG).show()
+      }
+      .addOnFailureListener {
+        Toast.makeText(this.requireContext(), "전송 오류", Toast.LENGTH_LONG).show()
+      }
+  }
+
   inner class CurrentMembersRecyclerViewAdapter
     : RecyclerView.Adapter<CurrentMembersRecyclerViewAdapter.ViewHolder>() {
 
@@ -88,19 +110,21 @@ class PromiseDetailMembersFragment: BaseFragment() {
         itemView.nicknameTextView.text = contact.nickname()
 
         itemView.notifyPromiseButton.setOnClickListener { view ->
-          if (contact.pushToken() == null) {
+          val pushToken = contact.pushToken()
+          if (pushToken == null) {
             Toast.makeText(view.context, "캐치업 회원이 아니라서 알림을 보낼 수 없어요 ㅠㅠ", Toast.LENGTH_SHORT).show()
             return@setOnClickListener
+          } else {
+            MaterialDialog.Builder(itemView.context)
+              .title("알림")
+              .content("알림 메세지를 입력하세요")
+              .positiveText(R.string.confirm)
+              .negativeText(R.string.cancel)
+              .inputRangeRes(2, 80, R.color.dark_sky_blue)
+              .input(null, null) { dialog, input ->
+                notify(pushToken, input.toString())
+              }.show()
           }
-
-          MaterialDialog.Builder(itemView.context)
-            .title("알림")
-            .content("알림 메세지를 입력하세요")
-            .positiveText(R.string.confirm)
-            .negativeText(R.string.cancel)
-            .inputRangeRes(2, 80, R.color.dark_sky_blue)
-            .input(null, null) { dialog, input ->
-            }.show()
         }
 
         viewModel.loadSingleContact(contact.phone())?.let { contactFlowable ->
@@ -113,9 +137,6 @@ class PromiseDetailMembersFragment: BaseFragment() {
             }
           )
         }
-
-        val muta: MutableLiveData<String> = MutableLiveData()
-        muta.observe(this@PromiseDetailMembersFragment, Observer {  })
 
         val distance = loadDistance(contact.latitude(), contact.longitude())
 

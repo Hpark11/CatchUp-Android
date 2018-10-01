@@ -7,6 +7,7 @@ import blackburn.io.catchup.model.PlaceInfo
 import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.service.app.SchedulerUtil
 import blackburn.io.catchup.service.app.SharedPrefService
+import com.amazonaws.amplify.generated.graphql.BatchGetCatchUpContactsQuery
 import com.amazonaws.amplify.generated.graphql.CreateCatchUpPromiseMutation
 import com.amazonaws.amplify.generated.graphql.UpdateCatchUpPromiseMutation
 import com.amazonaws.util.DateUtils
@@ -181,6 +182,23 @@ class NewPromiseViewModel @Inject constructor(
           if (!emitter.isDisposed) emitter.onError(it)
         }
       )
+    }
+  }
+
+  fun loadContacts(phones: List<String>): Maybe<List<BatchGetCatchUpContactsQuery.BatchGetCatchUpContact>> {
+    return Maybe.create { emitter ->
+      compositeDisposable += data.requestContacts(phones).compose(scheduler.forObservable())
+        .subscribeBy(
+          onNext = { data ->
+            data.data()?.batchGetCatchUpContacts()?.let {
+              if(!emitter.isDisposed) emitter.onSuccess(it)
+            }
+          },
+          onError = {
+            it.printStackTrace()
+            if(!emitter.isDisposed) emitter.onError(it)
+          }
+        )
     }
   }
 

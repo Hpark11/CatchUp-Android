@@ -25,7 +25,7 @@
             android:value="@string/google_maps_key" />
 
         <service
-            android:name=".service.android.PushTokenService"
+            android:name=".service.android.PushMessageService"
             android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
