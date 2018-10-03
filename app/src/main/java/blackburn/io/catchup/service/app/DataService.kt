@@ -197,7 +197,7 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
           .ageRange(ageRange)
           .gender(gender)
           .birthday(birthday)
-          .credit(0)
+          .credit(25)
           .build())
         .build()
     )
