@@ -5,8 +5,11 @@ import android.transition.TransitionInflater
 import android.util.Log
 import android.view.WindowManager
 import blackburn.io.catchup.R
+import blackburn.io.catchup.app.BaseActivity
 import blackburn.io.catchup.app.BaseWithoutDIActivity
 import blackburn.io.catchup.app.Define
+import blackburn.io.catchup.app.util.StatusBarState
+import blackburn.io.catchup.app.util.setStatusBarContentColor
 import com.afollestad.materialdialogs.MaterialDialog
 import com.kakao.kakaolink.v2.KakaoLinkResponse
 import com.kakao.kakaolink.v2.KakaoLinkService
@@ -30,9 +33,8 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_promise_confirm)
 
-    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     window.statusBarColor = resources.getColor(R.color.dark_sky_blue)
+    setStatusBarContentColor(window, StatusBarState.Dark)
     window.enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.fade)
 
     name = intent.getStringExtra("name")
@@ -47,6 +49,7 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
     promiseDateTimeTextView.text = dateTime
     promiseLocationTextView.text = location
     promiseMembersTextView.text = members
+    val appUrl = "${Define.APP_MARKET_URL}$packageName"
 
     promiseConfirmButton.setOnClickListener {
       MaterialDialog.Builder(this@PromiseConfirmActivity)
@@ -58,15 +61,15 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
             ContentObject.newBuilder("테스트",
               "http://www.kakaocorp.com/images/logo/og_daumkakao_151001.png",
               LinkObject.newBuilder()
-                .setWebUrl(Define.APP_MARKET_URL)
-                .setMobileWebUrl(Define.APP_MARKET_URL)
+                .setWebUrl(appUrl)
+                .setMobileWebUrl(appUrl)
                 .build())
               .setDescrption(members)
               .build())
             .addButton(
               ButtonObject("앱에서 보기", LinkObject.newBuilder()
-                .setWebUrl(Define.APP_MARKET_URL)
-                .setMobileWebUrl(Define.APP_MARKET_URL)
+                .setWebUrl(appUrl)
+                .setMobileWebUrl(appUrl)
                 .build()))
             .setAddressTitle(name)
             .build()

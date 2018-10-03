@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.arch.lifecycle.Observer
 import android.content.Context
 import android.location.LocationManager
+import android.net.Uri
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
@@ -21,11 +22,15 @@ import blackburn.io.catchup.app.BaseActivity
 import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.app.util.plusAssign
 import blackburn.io.catchup.di.module.GlideApp
+import blackburn.io.catchup.model.AppVersion
 import blackburn.io.catchup.service.android.LocationTrackingService
 import blackburn.io.catchup.ui.common.MonthPicker
 import blackburn.io.catchup.ui.creation.NewPromiseActivity
 import blackburn.io.catchup.ui.detail.PromiseDetailActivity
+import blackburn.io.catchup.ui.entrance.EntranceViewModel
+import com.afollestad.materialdialogs.MaterialDialog
 import com.amazonaws.amplify.generated.graphql.ListCatchUpPromisesByContactQuery
+import com.amazonaws.util.DateUtils
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import io.reactivex.rxkotlin.subscribeBy
@@ -81,8 +86,6 @@ class MainActivity : BaseActivity() {
       monthPicker?.show(supportFragmentManager,"");
     }
 
-    viewModel.loadPromiseList(current.get(Calendar.YEAR), current.get(Calendar.MONTH) + 1)
-
     statusCheck()
 
     if (isGooglePlayServicesAvailable()) {
@@ -93,6 +96,13 @@ class MainActivity : BaseActivity() {
         isServiceRunning = true
       }
     }
+
+    viewModel.checkAppVersion()
+  }
+
+  override fun onStart() {
+    super.onStart()
+    viewModel.loadPromiseList(current.get(Calendar.YEAR), current.get(Calendar.MONTH) + 1)
   }
 
   private fun statusCheck() {
@@ -126,7 +136,45 @@ class MainActivity : BaseActivity() {
     return true
   }
 
+  private fun guideToUpdate(version: AppVersion, isForce: Boolean) {
+    val dialog = MaterialDialog.Builder(this)
+      .title("최신 버전 업데이트")
+      .content("새로운 버전(${version.major}.${version.minor}.${version.revision})이 출시되었습니다. 업데이트 하시겠습니까?")
+      .positiveText(R.string.confirm)
+      .onPositive { dialog, which ->
+        try {
+          startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
+        } catch (anfe: android.content.ActivityNotFoundException) {
+          startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName")))
+        }
+      }
+
+    if (isForce) {
+      dialog.show()
+    } else {
+      dialog.negativeText(R.string.cancel)
+        .onNegative { dia, which -> dia.dismiss() }
+        .show()
+    }
+  }
+
   private fun bindViewModel() {
+    viewModel.appVersion.observe(this, Observer {
+      it?.let { version ->
+        if (version.major > Define.VERSION_MAJOR) {
+          guideToUpdate(version, true)
+        }
+
+        if (version.minor > Define.VERSION_MINOR) {
+          guideToUpdate(version, true)
+        }
+
+        if (version.revision > Define.VERSION_REVISION) {
+          guideToUpdate(version, false)
+        }
+      }
+    })
+
     viewModel.filteredList.observe(this, Observer { promiseList ->
       promiseList?.let {
         mainPlaceHolderView.visibility = if (promiseList.isEmpty()) View.VISIBLE else View.GONE
@@ -145,7 +193,11 @@ class MainActivity : BaseActivity() {
     private var promiseList = listOf<ListCatchUpPromisesByContactQuery.ListCatchUpPromisesByContact>()
 
     fun setPromises(list: List<ListCatchUpPromisesByContactQuery.ListCatchUpPromisesByContact>) {
-      promiseList = list
+      val current = Calendar.getInstance()
+      promiseList = list.sortedBy {
+        val timestamp = DateUtils.parseISO8601Date(it.dateTime()).time
+        return@sortedBy if (timestamp > current.timeInMillis) timestamp else timestamp * 2
+      }
       notifyDataSetChanged()
     }
 

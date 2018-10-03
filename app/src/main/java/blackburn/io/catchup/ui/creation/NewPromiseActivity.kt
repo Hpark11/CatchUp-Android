@@ -1,6 +1,7 @@
 package blackburn.io.catchup.ui.creation
 
 import android.app.ActivityOptions
+import android.app.AlertDialog
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -29,6 +30,7 @@ import blackburn.io.catchup.model.PlaceInfo
 import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.ui.common.PromiseInputView
 import com.google.firebase.firestore.FirebaseFirestore
+import dmax.dialog.SpotsDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.item_member_selected.view.*
@@ -80,7 +82,10 @@ class NewPromiseActivity : BaseActivity() {
     bindViewModel()
 
     val id = intent.getStringExtra("id")
-    id?.let { viewModel.loadPromise(it) }
+    id?.let {
+      viewModel.loadPromise(it)
+      newPromiseConfirmButton.background = resources.getDrawable(R.drawable.btn_modify)
+    }
 
     selectedMembersRecyclerView.apply {
       layoutManager = GridLayoutManager(
@@ -141,6 +146,31 @@ class NewPromiseActivity : BaseActivity() {
     }
 
     newPromiseConfirmButton.setOnClickListener { view ->
+      val dialog: AlertDialog = SpotsDialog.Builder().setContext(this@NewPromiseActivity).build()
+
+      val reasons = mutableListOf<String>()
+      if (viewModel.name.value.isNullOrEmpty()) {
+        reasons.add("이름")
+      }
+
+      if (viewModel.dateTime.value == null) {
+        reasons.add("일시")
+      }
+
+      if (viewModel.placeInfo.value == null) {
+        reasons.add("장소")
+      }
+
+      if (contacts.isEmpty()) {
+        reasons.add("멤버")
+      }
+
+      if (reasons.isNotEmpty()) {
+        Toast.makeText(this@NewPromiseActivity, "${reasons.joinToString(separator = ",")} 입력 필요", Toast.LENGTH_LONG).show()
+        return@setOnClickListener
+      }
+
+      dialog.show()
       if (id != null) {
         disposable += viewModel.editPromise(id).observeOn(AndroidSchedulers.mainThread()).subscribeBy(
           onSuccess = { data ->
@@ -153,7 +183,7 @@ class NewPromiseActivity : BaseActivity() {
             it.printStackTrace()
           },
           onComplete = {
-            Toast.makeText(this@NewPromiseActivity, "완료", Toast.LENGTH_LONG).show()
+            dialog.dismiss()
           }
         )
       } else {
@@ -177,6 +207,9 @@ class NewPromiseActivity : BaseActivity() {
               }
             }
             it.printStackTrace()
+          },
+          onComplete = {
+            dialog.dismiss()
           }
         )
       }

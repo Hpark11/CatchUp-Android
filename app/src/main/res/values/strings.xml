@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CatchUp</string>
+    <string name="app_name">캐치업</string>
 
     <string name="kakao_app_key">dccae63cb73bd8096d09826d2e0ce581</string>
     <string name="kakao_scheme">kakaodccae63cb73bd8096d09826d2e0ce581</string>

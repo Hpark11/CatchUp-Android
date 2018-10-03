@@ -46,7 +46,6 @@ class MemberSelectActivity: BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_member_select)
-    setStatusBarTranslucent(true)
 
     viewModel = ViewModelProviders.of(this, viewModelFactory)[MemberSelectViewModel::class.java]
     bindViewModel()
@@ -82,6 +81,7 @@ class MemberSelectActivity: BaseActivity() {
   private fun bindViewModel() {
     viewModel.getContacts().observe(this, Observer {
       originalList = it ?: listOf()
+      searchedList = originalList
       memberSelectRecyclerView.adapter.notifyDataSetChanged()
     })
   }
@@ -107,15 +107,17 @@ class MemberSelectActivity: BaseActivity() {
         }
 
         itemView.setOnClickListener {
-          if (it.isSelected) {
-            selectedSet.remove(item.phone)
-            itemView.checkMarkImageView.setImageDrawable(resources.getDrawable(R.drawable.image_none))
-          } else {
-            selectedSet.add(item.phone)
-            itemView.checkMarkImageView.setImageDrawable(resources.getDrawable(R.drawable.icon_ok))
-          }
+          if (selectedSet.size <= 20) {
+            if (it.isSelected) {
+              selectedSet.remove(item.phone)
+              itemView.checkMarkImageView.setImageDrawable(resources.getDrawable(R.drawable.image_none))
+            } else {
+              selectedSet.add(item.phone)
+              itemView.checkMarkImageView.setImageDrawable(resources.getDrawable(R.drawable.icon_ok))
+            }
 
-          it.isSelected = !it.isSelected
+            it.isSelected = !it.isSelected
+          }
         }
       }
     }

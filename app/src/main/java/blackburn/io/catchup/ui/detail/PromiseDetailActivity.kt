@@ -21,6 +21,8 @@ import kotlinx.android.synthetic.main.activity_promise_detail.*
 import java.util.*
 import javax.inject.Inject
 import android.arch.lifecycle.Observer
+import blackburn.io.catchup.app.util.StatusBarState
+import blackburn.io.catchup.app.util.setStatusBarContentColor
 import blackburn.io.catchup.model.PlaceInfo
 import com.amazonaws.util.DateUtils
 import java.text.SimpleDateFormat
@@ -57,10 +59,8 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_promise_detail)
-
-    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     window.statusBarColor = resources.getColor(R.color.dark_sky_blue)
+    setStatusBarContentColor(window, StatusBarState.Dark)
 
     id = intent.getStringExtra("id") ?: ""
     val name = intent.getStringExtra("name") ?: ""
@@ -109,18 +109,7 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     val dateTime = intent.getStringExtra("dateTime") ?: ""
 
     if (isLocationServiceEnabled() && dateTime.isNotEmpty()) {
-      val parsedDateTime = DateUtils.parseISO8601Date(dateTime)
-      val current = Calendar.getInstance().timeInMillis
-
-      if (current >= (parsedDateTime.time - Define.ACTIVATE_PERIOD) && current <= parsedDateTime.time) {
-        viewModel.loadPromise(id)
-      } else {
-        Toast.makeText(
-          this@PromiseDetailActivity,
-          "약속 활성화 시간 (약속시간 두시간 이내)이 아니여서 친구들의 상태를 확인 할 수 없어요",
-          Toast.LENGTH_LONG
-        ).show()
-      }
+      viewModel.loadPromise(id)
     } else {
       Toast.makeText(
         this@PromiseDetailActivity,
@@ -150,7 +139,20 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
     })
 
     viewModel.contactList.observe(this, Observer { contacts ->
-      promiseDetailMapFragment.updateContacts(contacts ?: listOf())
+      val dateTime = intent.getStringExtra("dateTime") ?: ""
+      val parsedDateTime = DateUtils.parseISO8601Date(dateTime)
+      val current = Calendar.getInstance().timeInMillis
+
+      if (current >= (parsedDateTime.time - Define.ACTIVATE_PERIOD) && current <= parsedDateTime.time) {
+        promiseDetailMapFragment.updateContacts(contacts ?: listOf())
+      } else {
+        Toast.makeText(
+          this@PromiseDetailActivity,
+          "약속 활성화 시간 (약속시간 두시간 이내)이 아니여서 친구들의 위치를 확인 할 수 없어요",
+          Toast.LENGTH_LONG
+        ).show()
+      }
+
       promiseDetailUsersFragment.updateContacts(contacts ?: listOf())
     })
 

@@ -8,16 +8,19 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.telephony.TelephonyManager
 import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseActivity
 import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.ui.MainActivity
+import com.afollestad.materialdialogs.MaterialDialog
 import com.google.firebase.iid.FirebaseInstanceId
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
@@ -71,8 +74,6 @@ class EntranceActivity: BaseActivity() {
     } catch (e: NoSuchAlgorithmException) {
       e.printStackTrace()
     }
-
-    viewModel.checkAppVersion()
   }
 
   override fun onResume() {
@@ -85,22 +86,6 @@ class EntranceActivity: BaseActivity() {
   }
 
   private fun bindViewModel() {
-    viewModel.appVersion.observe(this, Observer {
-      it?.let { version ->
-        if (version.major > Define.VERSION_MAJOR) {
-
-        }
-
-        if (version.minor > Define.VERSION_MINOR) {
-
-        }
-
-        if (version.revision > Define.VERSION_REVISION) {
-
-        }
-      }
-    })
-
     viewModel.initDoneWithPhone.observe(this, Observer {
       it?.let { phone ->
         val intent = Intent(this@EntranceActivity, MainActivity::class.java)

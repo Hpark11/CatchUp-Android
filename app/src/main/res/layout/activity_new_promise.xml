@@ -28,7 +28,6 @@
                 android:id="@+id/newPromiseActionBar"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/action_bar_height"
-                android:layout_marginTop="@dimen/status_bar_default_height"
                 app:left_first_image="@drawable/icon_x"
                 app:use_left_first="true"
                 app:center_title_text="약속 추가" />

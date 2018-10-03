@@ -19,27 +19,11 @@ class EntranceViewModel @Inject constructor(
 ) : BaseViewModel() {
 
   // Output
-  val appVersion: MutableLiveData<AppVersion> = MutableLiveData()
   val initDoneWithPhone: MutableLiveData<String> = MutableLiveData()
 
   // Input
 
   // Action
-  fun checkAppVersion() {
-    compositeDisposable += data.requestAppVersion().compose(scheduler.forObservable()).subscribeBy(
-      onNext = { response ->
-        response.data()?.checkAppVersion()?.let {
-          appVersion.value = AppVersion(
-            it.major() ?: Define.VERSION_MAJOR,
-            it.minor() ?: Define.VERSION_MINOR,
-            it.revision() ?: Define.VERSION_REVISION
-          )
-        }
-      },
-      onError = {
-        it.printStackTrace()
-      })
-  }
 
   fun updateCatchUpUser(
     id: String,
@@ -115,6 +99,4 @@ class EntranceViewModel @Inject constructor(
         }
       )
   }
-
-  data class AppVersion(val major: Int, val minor: Int, val revision: Int)
 }

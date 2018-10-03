@@ -14,7 +14,6 @@
         android:layout_height="@dimen/action_bar_height"
         android:layout_marginEnd="@dimen/space_none"
         android:layout_marginStart="@dimen/space_none"
-        android:layout_marginTop="@dimen/status_bar_default_height"
         app:center_title_text="구성원 선택"
         app:left_first_image="@drawable/icon_x"
         app:right_second_text="@string/confirm"

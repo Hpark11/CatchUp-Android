@@ -61,7 +61,7 @@ class NewPromiseViewModel @Inject constructor(
           promise.name()?.let { nameInput.onNext(it) }
 
           promise.dateTime()?.let { dateTimeInput.onNext(DateUtils.parseISO8601Date(it)) }
-          promise.contacts()?.let { contactsInput.onNext(it) }
+          promise.contacts()?.filterNot { it.equals(pref.phone) }.let { contactsInput.onNext(it ?: listOf()) }
 
           val address = promise.address()
           val lat = promise.latitude()
@@ -155,7 +155,7 @@ class NewPromiseViewModel @Inject constructor(
   fun editPromise(id: String): Maybe<UpdateCatchUpPromiseMutation.Data> {
     val name = name.value ?: "None"
     val place = placeInfo.value ?: PlaceInfo("None", 0.0, 0.0)
-    val contacts = contacts.value ?: listOf()
+    val contacts = (contacts.value ?: listOf()) + listOf(pref.phone)
 
     return Maybe.create { emitter ->
       compositeDisposable += data.updatePromise(
@@ -167,7 +167,7 @@ class NewPromiseViewModel @Inject constructor(
         place.latitude,
         place.longitude,
         contacts
-      ).subscribeOn(Schedulers.io()).subscribeBy(
+      ).subscribeBy(
         onNext = { response ->
           if (!emitter.isDisposed) {
             response.data()?.let { data ->
