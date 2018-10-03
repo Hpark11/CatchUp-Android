@@ -1,6 +1,7 @@
 package blackburn.io.catchup.ui.entrance
 
 import android.Manifest
+import android.app.ActivityOptions
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
@@ -12,6 +13,7 @@ import android.support.v4.content.ContextCompat
 import android.telephony.TelephonyManager
 import android.util.Base64
 import android.util.Log
+import android.view.View
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseActivity
 import blackburn.io.catchup.app.Define
@@ -24,6 +26,7 @@ import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
 import com.kakao.usermgmt.response.MeV2Response
 import com.kakao.util.exception.KakaoException
+import kotlinx.android.synthetic.main.activity_splash.*
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import javax.inject.Inject
@@ -51,7 +54,9 @@ class EntranceActivity: BaseActivity() {
 
     sessionCallback = SessionCallback()
     Session.getCurrentSession().addCallback(sessionCallback)
-    Session.getCurrentSession().checkAndImplicitOpen()
+    if (!Session.getCurrentSession().checkAndImplicitOpen()) {
+      loginButton.visibility = View.VISIBLE
+    }
 
     try {
       val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
@@ -68,9 +73,14 @@ class EntranceActivity: BaseActivity() {
     }
 
     viewModel.checkAppVersion()
+  }
 
+  override fun onResume() {
+    super.onResume()
     if (!isNecessaryPermissionsGranted) {
-      startActivity(Intent(this@EntranceActivity, PermissionsActivity::class.java))
+      val options = ActivityOptions.makeSceneTransitionAnimation(this)
+      val intent = Intent(this@EntranceActivity, PermissionsActivity::class.java)
+      startActivity(intent, options.toBundle())
     }
   }
 

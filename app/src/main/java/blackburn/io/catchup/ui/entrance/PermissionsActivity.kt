@@ -2,6 +2,8 @@ package blackburn.io.catchup.ui.entrance
 
 import android.Manifest
 import android.os.Bundle
+import android.transition.TransitionInflater
+import android.view.WindowManager
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseWithoutDIActivity
 import blackburn.io.catchup.app.util.plusAssign
@@ -14,6 +16,9 @@ class PermissionsActivity: BaseWithoutDIActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_permissions)
+    
+    window.statusBarColor = resources.getColor(R.color.dark_sky_blue)
+    window.enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.fade)
 
     disposable += RxView.clicks(permissionApproveButton).switchMapSingle {
       return@switchMapSingle TedRx2Permission.with(this)
@@ -26,7 +31,7 @@ class PermissionsActivity: BaseWithoutDIActivity() {
         ).request()
     }.subscribe({ result ->
       if (result.isGranted) {
-        finish()
+        finishAfterTransition()
       }
     }, { throwable ->
       throwable.printStackTrace()
