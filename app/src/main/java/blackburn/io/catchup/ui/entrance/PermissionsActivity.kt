@@ -16,7 +16,7 @@ class PermissionsActivity: BaseWithoutDIActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_permissions)
-    
+
     window.statusBarColor = resources.getColor(R.color.dark_sky_blue)
     window.enterTransition = TransitionInflater.from(this).inflateTransition(R.transition.fade)
 

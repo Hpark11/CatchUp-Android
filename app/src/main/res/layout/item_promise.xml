@@ -45,7 +45,7 @@
 
                     <TextView
                         android:id="@+id/promiseNameTextView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@color/slate"
@@ -57,8 +57,8 @@
                         android:id="@+id/timeLeftTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:textAlignment="textEnd"
+                        android:layout_marginStart="@dimen/space_mid"
                         android:layout_marginEnd="@dimen/space_mid"
                         android:textColor="@color/md_blue_400"
                         android:textSize="14sp"

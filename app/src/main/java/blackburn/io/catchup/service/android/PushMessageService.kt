@@ -56,7 +56,7 @@ class PushMessageService: FirebaseMessagingService() {
       PendingIntent.FLAG_UPDATE_CURRENT
     )
 
-    builder.setSmallIcon(R.mipmap.ic_launcher_round)
+    builder.setSmallIcon(R.drawable.icon_push_status_bar)
       .setLargeIcon(BitmapFactory.decodeResource(applicationContext.resources, R.mipmap.ic_launcher))
       .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
       .setContentTitle(title)

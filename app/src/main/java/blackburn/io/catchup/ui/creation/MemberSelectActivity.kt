@@ -30,6 +30,7 @@ class MemberSelectActivity: BaseActivity() {
   private lateinit var viewModel: MemberSelectViewModel
   private lateinit var selectedSet: MutableSet<String>
   private var searchedList: List<Contact> = listOf()
+  private var originalList: List<Contact> = listOf()
 
   private val confirmUserSelect = View.OnClickListener {
     val intent = Intent()
@@ -65,9 +66,9 @@ class MemberSelectActivity: BaseActivity() {
 
     searchContactEditText.addTextChangedListener(object: TextWatcher {
       override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//        searchedList = viewModel.contactList.value?.filter {
-//          it.nickname.toLowerCase().contains(s.toString().toLowerCase())
-//        } ?: listOf()
+        searchedList = originalList.filter {
+          it.nickname.toLowerCase().contains(s.toString().toLowerCase())
+        }
         memberSelectRecyclerView.adapter.notifyDataSetChanged()
       }
 
@@ -80,7 +81,7 @@ class MemberSelectActivity: BaseActivity() {
 
   private fun bindViewModel() {
     viewModel.getContacts().observe(this, Observer {
-      searchedList = it ?: listOf()
+      originalList = it ?: listOf()
       memberSelectRecyclerView.adapter.notifyDataSetChanged()
     })
   }
