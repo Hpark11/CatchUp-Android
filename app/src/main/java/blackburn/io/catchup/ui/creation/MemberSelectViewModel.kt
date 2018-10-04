@@ -43,6 +43,7 @@ class MemberSelectViewModel @Inject constructor(
       onNext = {
         it.data()?.batchGetCatchUpContacts()?.let { contacts ->
           realm.executeTransactionAsync { strongRealm ->
+
             contacts.forEach { singleContact ->
               singleContact?.phone()?.let { phone ->
                 var contact = strongRealm.where(Contact::class.java)

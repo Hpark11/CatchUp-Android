@@ -17,6 +17,7 @@ import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseActivity
 import blackburn.io.catchup.app.Define
@@ -27,10 +28,14 @@ import blackburn.io.catchup.service.android.LocationTrackingService
 import blackburn.io.catchup.ui.common.MonthPicker
 import blackburn.io.catchup.ui.creation.NewPromiseActivity
 import blackburn.io.catchup.ui.detail.PromiseDetailActivity
-import blackburn.io.catchup.ui.entrance.EntranceViewModel
 import com.afollestad.materialdialogs.MaterialDialog
 import com.amazonaws.amplify.generated.graphql.ListCatchUpPromisesByContactQuery
 import com.amazonaws.util.DateUtils
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.reward.RewardItem
+import com.google.android.gms.ads.reward.RewardedVideoAd
+import com.google.android.gms.ads.reward.RewardedVideoAdListener
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import io.reactivex.rxkotlin.subscribeBy
@@ -41,7 +46,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), RewardedVideoAdListener {
 
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -51,6 +56,7 @@ class MainActivity : BaseActivity() {
   private var monthPicker: MonthPicker? = null
   private val current = Calendar.getInstance()
   private var isServiceRunning = false
+  private lateinit var ad: RewardedVideoAd
 
   private val dateSetListener = DatePickerDialog.OnDateSetListener { datePicker, year, month, day ->
     current.set(Calendar.YEAR, year)
@@ -83,7 +89,7 @@ class MainActivity : BaseActivity() {
       monthPicker = MonthPicker.getInstance()
       monthPicker?.setYearMonth(current.get(Calendar.YEAR), current.get(Calendar.MONTH) + 1)
       monthPicker?.listener = dateSetListener
-      monthPicker?.show(supportFragmentManager,"");
+      monthPicker?.show(supportFragmentManager, "");
     }
 
     statusCheck()
@@ -98,6 +104,10 @@ class MainActivity : BaseActivity() {
     }
 
     viewModel.checkAppVersion()
+    MobileAds.initialize(this, resources.getString(R.string.admod_app_id))
+    // Use an activity context to get the rewarded video instance.
+    ad = MobileAds.getRewardedVideoAdInstance(this)
+    ad.rewardedVideoAdListener = this
   }
 
   override fun onStart() {
@@ -187,6 +197,18 @@ class MainActivity : BaseActivity() {
     monthSelectTextView.text = SimpleDateFormat("yyyy.MM", Locale.KOREA).format(calendar.time)
   }
 
+  private fun showAdWithCreditCharge() {
+    if (ad.isLoaded) {
+      ad.show()
+    }
+  }
+
+  private fun loadRewardedVideoAd() {
+    // ca-app-pub-1670879929355255/3786261338
+    ad.loadAd("ca-app-pub-3940256099942544/5224354917", AdRequest.Builder().build())
+  }
+
+
   private inner class PromisesRecyclerViewAdapter(
     private val currentUserPhone: String
   ) : RecyclerView.Adapter<PromisesRecyclerViewAdapter.ViewHolder>() {
@@ -201,8 +223,7 @@ class MainActivity : BaseActivity() {
       notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
-      = ViewHolder(LayoutInflater.from(this@MainActivity)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(LayoutInflater.from(this@MainActivity)
       .inflate(R.layout.item_promise, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -260,7 +281,8 @@ class MainActivity : BaseActivity() {
         }
 
         itemView.membersRecyclerView.apply {
-          adapter = MembersRecyclerViewAdapter(promise.contacts()?.filter { !it.equals(currentUserPhone) } ?: listOf())
+          adapter = MembersRecyclerViewAdapter(promise.contacts()?.filter { !it.equals(currentUserPhone) }
+            ?: listOf())
           layoutManager = GridLayoutManager(itemView.context, 1, GridLayoutManager.HORIZONTAL, false)
         }
       }
@@ -297,5 +319,55 @@ class MainActivity : BaseActivity() {
   override fun onBackPressed() {
     super.onBackPressed()
     finishAffinity()
+  }
+
+  override fun onPause() {
+    super.onPause()
+    ad.pause(this)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    ad.resume(this)
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    ad.destroy(this)
+  }
+
+  override fun onRewarded(reward: RewardItem) {
+    Toast.makeText(this, "onRewarded! currency: ${reward.type} amount: ${reward.amount}",
+      Toast.LENGTH_SHORT).show()
+    // Reward the user.
+  }
+
+  override fun onRewardedVideoAdLeftApplication() {
+    Toast.makeText(this, "onRewardedVideoAdLeftApplication", Toast.LENGTH_SHORT).show()
+  }
+
+  override fun onRewardedVideoAdClosed() {
+    loadRewardedVideoAd()
+    Toast.makeText(this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show()
+  }
+
+  override fun onRewardedVideoAdFailedToLoad(errorCode: Int) {
+    Toast.makeText(this, "onRewardedVideoAdFailedToLoad", Toast.LENGTH_SHORT).show()
+  }
+
+  override fun onRewardedVideoAdLoaded() {
+    Toast.makeText(this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show()
+  }
+
+  override fun onRewardedVideoAdOpened() {
+    Toast.makeText(this, "onRewardedVideoAdOpened", Toast.LENGTH_SHORT).show()
+  }
+
+  override fun onRewardedVideoStarted() {
+    Toast.makeText(this, "onRewardedVideoStarted", Toast.LENGTH_SHORT).show()
+  }
+
+  override fun onRewardedVideoCompleted() {
+    Toast.makeText(this, "onRewardedVideoCompleted", Toast.LENGTH_SHORT).show()
   }
 }

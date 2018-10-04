@@ -13,8 +13,8 @@ android {
         applicationId "blackburn.io.catchup"
         minSdkVersion 22
         targetSdkVersion 27
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 3
+        versionName "1.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -75,6 +75,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
     implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.google.android.gms:play-services-places:15.0.1'
+    implementation 'com.google.android.gms:play-services-ads:15.0.1'
 
     // Dialogs
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'

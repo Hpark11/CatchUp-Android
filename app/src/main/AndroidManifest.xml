@@ -23,6 +23,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/admod_app_id"/>
 
         <service
             android:name=".service.android.PushMessageService"

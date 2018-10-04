@@ -10,6 +10,7 @@ import blackburn.io.catchup.service.app.SharedPrefService
 import com.amazonaws.amplify.generated.graphql.BatchGetCatchUpContactsQuery
 import com.amazonaws.amplify.generated.graphql.CreateCatchUpPromiseMutation
 import com.amazonaws.amplify.generated.graphql.UpdateCatchUpPromiseMutation
+import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers
 import com.amazonaws.util.DateUtils
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -100,7 +101,7 @@ class NewPromiseViewModel @Inject constructor(
         return@switchMap data.useCredit(userId)
 
       }.switchMap {
-        return@switchMap data.requestContacts(contacts.value ?: listOf())
+        return@switchMap data.requestContacts(contacts.value ?: listOf(), AppSyncResponseFetchers.NETWORK_ONLY)
 
       }.map { response ->
         val registered = response.data()?.batchGetCatchUpContacts()?.mapNotNull {

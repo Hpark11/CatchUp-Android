@@ -50,6 +50,8 @@ class NewPromiseActivity : BaseActivity() {
 
   private var contacts = listOf<String>()
 
+  var dialog: AlertDialog? = null
+
   private val pickerCallback = object : DateTimePicker.Callback {
     override fun onCancelled() {}
 
@@ -146,7 +148,7 @@ class NewPromiseActivity : BaseActivity() {
     }
 
     newPromiseConfirmButton.setOnClickListener { view ->
-      val dialog: AlertDialog = SpotsDialog.Builder().setContext(this@NewPromiseActivity).build()
+      dialog = SpotsDialog.Builder().setContext(this@NewPromiseActivity).build()
 
       val reasons = mutableListOf<String>()
       if (viewModel.name.value.isNullOrEmpty()) {
@@ -170,7 +172,7 @@ class NewPromiseActivity : BaseActivity() {
         return@setOnClickListener
       }
 
-      dialog.show()
+      dialog?.show()
       if (id != null) {
         disposable += viewModel.editPromise(id).observeOn(AndroidSchedulers.mainThread()).subscribeBy(
           onSuccess = { data ->
@@ -183,7 +185,7 @@ class NewPromiseActivity : BaseActivity() {
             it.printStackTrace()
           },
           onComplete = {
-            dialog.dismiss()
+            dialog?.dismiss()
           }
         )
       } else {
@@ -209,7 +211,7 @@ class NewPromiseActivity : BaseActivity() {
             it.printStackTrace()
           },
           onComplete = {
-            dialog.dismiss()
+            dialog?.dismiss()
           }
         )
       }
@@ -381,5 +383,11 @@ class NewPromiseActivity : BaseActivity() {
         }
       }
     }
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    dialog?.dismiss()
+    dialog = null
   }
 }

@@ -4,6 +4,7 @@
     <string name="kakao_app_key">dccae63cb73bd8096d09826d2e0ce581</string>
     <string name="kakao_scheme">kakaodccae63cb73bd8096d09826d2e0ce581</string>
     <string name="kakaolink_host">kakaolink</string>
+    <string name="admod_app_id">ca-app-pub-1670879929355255~5439745044</string>
 
     <string name="search_address">주소 찾기</string>
     <string name="search_address_confirm">확인</string>
