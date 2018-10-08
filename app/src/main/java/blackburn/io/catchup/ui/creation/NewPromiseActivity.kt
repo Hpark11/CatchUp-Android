@@ -202,7 +202,7 @@ class NewPromiseActivity : BaseActivity() {
                 Toast.makeText(this@NewPromiseActivity, "크레딧이 부족해요", Toast.LENGTH_LONG).show()
               }
               is DataService.QueryException -> {
-                Toast.makeText(this@NewPromiseActivity, "요청 오류", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@NewPromiseActivity, "요청 서버 오류", Toast.LENGTH_LONG).show()
               }
               is NewPromiseViewModel.PhoneNotFoundException -> {
                 Toast.makeText(this@NewPromiseActivity, "핸드폰 번호 요청 오류", Toast.LENGTH_LONG).show()

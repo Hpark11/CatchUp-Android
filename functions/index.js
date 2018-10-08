@@ -22,16 +22,36 @@ exports.sendNotification = functions.firestore.document('messages/{messageId}').
   return Promise.all(pushTokens.map((token) => {
     console.log("token: ", token);
 
-    const payload = {
+    var payload = {
       data: {
-        data_type: "direct_message",
+        data_type: "catchup_message",
         title: title,
         message: message,
-        message_id: messageId,
-      }
+        message_id: messageId
+      },
+      notification: {
+        title: title,
+        body: message,
+      },
+      android: {
+        ttl: 3600 * 1000,
+        notification: {
+          title: title,
+          body: message,
+        },
+      },
+      apns: {
+        payload: {
+          aps: {
+            badge: 1,
+            sound: 'default'
+          },
+        },
+      },
+      token: token
     };
 
-    return admin.messaging().sendToDevice(token, payload)
+    return admin.messaging().send(payload)
         .then(function(response) {
           console.log("Successfully sent message:", response);
           })

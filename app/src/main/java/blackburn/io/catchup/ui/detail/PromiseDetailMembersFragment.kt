@@ -78,7 +78,7 @@ class PromiseDetailMembersFragment: BaseFragment() {
 
   private fun notify(token: String, message: String) {
     val dataMap = mutableMapOf<String, Any>()
-    dataMap[Define.FIELD_TITLE] = "${sharedPrefService.nickname}로부터 알림"
+    dataMap[Define.FIELD_TITLE] = "${sharedPrefService.nickname}님의 메세지"
     dataMap[Define.FIELD_PUSH_TOKENS] = listOf(token)
     dataMap[Define.FIELD_MESSAGE] = message
 
@@ -96,7 +96,8 @@ class PromiseDetailMembersFragment: BaseFragment() {
     : RecyclerView.Adapter<CurrentMembersRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
-      = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_promise_detail, parent, false))
+      = ViewHolder(LayoutInflater.from(parent.context)
+      .inflate(R.layout.item_promise_detail, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int)
       = holder.bind(contactList[position])
@@ -106,7 +107,10 @@ class PromiseDetailMembersFragment: BaseFragment() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
       fun bind(contact: BatchGetCatchUpContactsQuery.BatchGetCatchUpContact) {
 
-        GlideApp.with(itemView).load(contact.profileImagePath()).fitCenter().placeholder(R.drawable.profile_default).into(itemView.profileImageView)
+        GlideApp.with(itemView).load(contact.profileImagePath())
+          .fitCenter()
+          .placeholder(R.drawable.profile_default)
+          .into(itemView.profileImageView)
         itemView.nicknameTextView.text = contact.nickname()
 
         itemView.notifyPromiseButton.setOnClickListener { view ->
@@ -143,7 +147,7 @@ class PromiseDetailMembersFragment: BaseFragment() {
         if (distance >= Define.DISTANCE_UPPERBOUND) {
           itemView.dueTimeTextView.text = "행방불명"
           itemView.dueTimeTextView.setTextColor(resources.getColor(R.color.warm_pink))
-          itemView.expectedTimeTextView.text = "GPS 차단 중"
+          itemView.expectedTimeTextView.text = "좌표 로드 실패"
         } else if (distance <= Define.DISTANCE_LOWERBOUND) {
           itemView.dueTimeTextView.text = "도착"
           itemView.dueTimeTextView.setTextColor(resources.getColor(R.color.warm_pink))

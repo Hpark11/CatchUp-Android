@@ -4,15 +4,13 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.media.RingtoneManager
 import android.support.v4.app.NotificationCompat
-import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import blackburn.io.catchup.R
-import blackburn.io.catchup.ui.MainActivity
-import java.util.*
+import android.app.NotificationChannel
+import android.os.Build
+import blackburn.io.catchup.ui.entrance.EntranceActivity
 
 class PushMessageService: FirebaseMessagingService() {
 
@@ -24,9 +22,9 @@ class PushMessageService: FirebaseMessagingService() {
     super.onMessageReceived(remoteMessage)
     remoteMessage?.let { remoteMessage ->
       val dataType = remoteMessage.data[getString(R.string.data_type)]
-      if (dataType == getString(R.string.direct_message)) {
+      if (dataType == getString(R.string.catchup_message)) {
         val title = remoteMessage.data[getString(R.string.data_title)] ?: ""
-        val message = remoteMessage.data[getString(R.string.data_message)] ?: ""
+        val message = remoteMessage.data[getString(R.string.data_body)] ?: ""
         val messageId = remoteMessage.data[getString(R.string.data_message_id)] ?: ""
         sendMessageNotification(title, message, messageId)
       }
@@ -34,21 +32,9 @@ class PushMessageService: FirebaseMessagingService() {
   }
 
   private fun sendMessageNotification(title: String, message: String, messageId: String) {
-    val notificationId = buildNotificationId(messageId)
+    val pendingIntent = Intent(this, EntranceActivity::class.java)
+    pendingIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
 
-    // Instantiate a Builder object.
-    val builder = NotificationCompat.Builder(
-      this,
-      getString(R.string.default_notification_channel_id)
-    )
-
-    // Creates an Intent for the Activity
-    val pendingIntent = Intent(this, MainActivity::class.java)
-
-    // Sets the Activity to start in a new, empty task
-    pendingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
-    // Creates the PendingIntent
     val notifyPendingIntent = PendingIntent.getActivity(
       this,
       0,
@@ -56,30 +42,19 @@ class PushMessageService: FirebaseMessagingService() {
       PendingIntent.FLAG_UPDATE_CURRENT
     )
 
-    builder.setSmallIcon(R.drawable.icon_statusbar)
-      .setLargeIcon(BitmapFactory.decodeResource(applicationContext.resources, R.mipmap.ic_launcher))
-      .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+    val channelId = "Default"
+    val builder = NotificationCompat.Builder(this, channelId)
+      .setSmallIcon(R.mipmap.ic_launcher)
       .setContentTitle(title)
-      .setColor(resources.getColor(R.color.md_blue_600))
+      .setContentText(message)
       .setAutoCancel(true)
-      .setSubText(message)
-      .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-      .setOnlyAlertOnce(true)
+      .setContentIntent(notifyPendingIntent)
 
-    builder.setContentIntent(notifyPendingIntent)
-    val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    mNotificationManager.notify(notificationId, builder.build())
-  }
-
-  private fun buildNotificationId(id: String): Int {
-    Log.d("PUSHMESSAGE", "buildNotificationId: building a notification id.")
-
-    var notificationId = 0
-    for (i in 0..8) {
-      notificationId += id[0].toInt()
+    val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val channel = NotificationChannel(channelId, getString(R.string.default_notification_channel_id), NotificationManager.IMPORTANCE_DEFAULT)
+      manager.createNotificationChannel(channel)
     }
-    Log.d("PUSHMESSAGE", "buildNotificationId: id: $id")
-    Log.d("PUSHMESSAGE", "buildNotificationId: notification id:$notificationId")
-    return notificationId
+    manager.notify(0, builder.build())
   }
 }

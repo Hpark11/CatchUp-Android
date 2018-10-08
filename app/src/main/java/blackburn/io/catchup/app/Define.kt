@@ -16,7 +16,7 @@ object Define {
 
   const val ACTIVATE_PERIOD = 7200000
 
-  const val DISTANCE_UPPERBOUND = 150000
+  const val DISTANCE_UPPERBOUND = 700000
   const val DISTANCE_LOWERBOUND = 200
 
   const val DEFAULT_LATITUDE = 0.0

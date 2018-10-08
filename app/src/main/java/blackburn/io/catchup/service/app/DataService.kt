@@ -303,6 +303,12 @@ class DataService @Inject constructor(private val client: AWSAppSyncClient) {
       )
     }
 
+    if (contactCreateInputList.isEmpty()) {
+      contactCreateInputList.add(
+        ContactCreateInput.builder().phone("0").nickname("미가입자").build()
+      )
+    }
+
     return from(
       BatchCreateCatchUpContactMutation.builder().contacts(contactCreateInputList).build()
     )

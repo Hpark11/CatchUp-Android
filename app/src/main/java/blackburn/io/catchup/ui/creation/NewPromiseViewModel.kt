@@ -112,7 +112,7 @@ class NewPromiseViewModel @Inject constructor(
 
       }.compose(scheduler.forObservable()).switchMap { unregisteredUsers ->
         return@switchMap data.batchCreateContacts(
-          unregisteredUsers, unregisteredUsers.map { "아는사람" }
+          unregisteredUsers, unregisteredUsers.map { "미가입자" }
         )
       }.compose(scheduler.forObservable()).switchMap { response ->
         val phone = pref.phone
