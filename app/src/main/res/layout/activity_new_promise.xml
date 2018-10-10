@@ -74,7 +74,7 @@
                 android:layout_marginStart="30dp"
                 app:input_text="구성원을 검색해주세요"
                 app:sub_image="@drawable/icon_search"
-                app:title_text="@string/promise_input_time" />
+                app:title_text="@string/promise_input_members" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/selectedMembersRecyclerView"

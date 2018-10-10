@@ -8,7 +8,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseActivity

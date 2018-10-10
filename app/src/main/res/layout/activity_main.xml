@@ -4,14 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_white_1000"
+    android:background="@color/md_grey_50"
     tools:context=".ui.MainActivity">
 
     <LinearLayout
         android:id="@+id/monthSelectLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="64dp"
         android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/md_white_1000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

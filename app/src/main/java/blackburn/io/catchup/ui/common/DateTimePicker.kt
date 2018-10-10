@@ -41,6 +41,7 @@ class DateTimePicker: DialogFragment() {
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     activity?.let {
       calendarPicker = it.layoutInflater.inflate(R.layout.sublime_picker, container) as SublimePicker
+      calendarPicker.setBackgroundColor(this.resources.getColor(blackburn.io.catchup.R.color.dark_sky_blue))
       val arguments = arguments
       var options: SublimeOptions? = null
 

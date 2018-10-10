@@ -27,7 +27,6 @@ import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.app.util.plusAssign
 import blackburn.io.catchup.di.module.GlideApp
 import blackburn.io.catchup.model.PlaceInfo
-import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.ui.common.PromiseInputView
 import com.google.firebase.firestore.FirebaseFirestore
 import dmax.dialog.SpotsDialog
@@ -51,8 +50,9 @@ class NewPromiseActivity : BaseActivity() {
   private var contacts = listOf<String>()
 
   var dialog: AlertDialog? = null
+  private var calendar = Calendar.getInstance()
 
-  private val pickerCallback = object : DateTimePicker.Callback {
+  private val timeSelectedCallback = object : DateTimePicker.Callback {
     override fun onCancelled() {}
 
     override fun onDateTimeRecurrenceSet(
@@ -63,7 +63,6 @@ class NewPromiseActivity : BaseActivity() {
       recurrenceRule: String?
     ) {
 
-      val calendar = selectedDate.firstDate
       calendar.set(
         calendar.get(Calendar.YEAR),
         calendar.get(Calendar.MONTH),
@@ -73,6 +72,22 @@ class NewPromiseActivity : BaseActivity() {
       )
 
       viewModel.dateTimeInput.onNext(calendar.time)
+    }
+  }
+
+  private val dateSelectedCallback = object : DateTimePicker.Callback {
+    override fun onCancelled() {}
+
+    override fun onDateTimeRecurrenceSet(
+      selectedDate: SelectedDate,
+      hourOfDay: Int,
+      minute: Int,
+      recurrenceOption: SublimeRecurrencePicker.RecurrenceOption,
+      recurrenceRule: String?
+    ) {
+
+      calendar = selectedDate.firstDate
+      showDateTimePicker(SublimeOptions.ACTIVATE_DATE_PICKER, timeSelectedCallback)
     }
   }
 
@@ -117,24 +132,7 @@ class NewPromiseActivity : BaseActivity() {
     }
 
     promiseDateInputView.setOnClickListener {
-      val calendarPickerFragment = DateTimePicker()
-      calendarPickerFragment.setCallback(pickerCallback)
-      val optionsPair = getOptions()
-
-      if (!optionsPair.first) {
-        Toast.makeText(
-          this@NewPromiseActivity,
-          R.string.error_message_datetime_select,
-          Toast.LENGTH_SHORT
-        ).show()
-        return@setOnClickListener
-      }
-
-      val bundle = Bundle()
-      bundle.putParcelable("SUBLIME_OPTIONS", optionsPair.second)
-      calendarPickerFragment.arguments = bundle
-      calendarPickerFragment.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
-      calendarPickerFragment.show(supportFragmentManager, "SUBLIME_PICKER")
+      showDateTimePicker(SublimeOptions.ACTIVATE_DATE_PICKER, dateSelectedCallback)
     }
 
     promiseAddressInputView.setOnClickListener {
@@ -173,49 +171,43 @@ class NewPromiseActivity : BaseActivity() {
       }
 
       dialog?.show()
-      if (id != null) {
-        disposable += viewModel.editPromise(id).observeOn(AndroidSchedulers.mainThread()).subscribeBy(
-          onSuccess = { data ->
-            data.updateCatchUpPromise()?.let { promise ->
-              notify(true, promise.contacts() ?: listOf())
-            }
-            confirmPromise(id)
-          },
-          onError = {
-            it.printStackTrace()
-          },
-          onComplete = {
-            dialog?.dismiss()
+
+      disposable += viewModel.makePromise(id).observeOn(AndroidSchedulers.mainThread()).subscribeBy(
+        onSuccess = { data ->
+          data.updateCatchUpPromise()?.let { promise ->
+            notify(id != null, promise.contacts() ?: listOf())
           }
-        )
-      } else {
-        disposable += viewModel.makePromise().observeOn(AndroidSchedulers.mainThread()).subscribeBy(
-          onSuccess = { data ->
-            data.createCatchUpPromise()?.let { promise ->
-              notify(false, promise.contacts() ?: listOf())
-            }
-            confirmPromise()
-          },
-          onError = {
-            when (it) {
-              is NewPromiseViewModel.CreditRunoutException -> {
-                Toast.makeText(this@NewPromiseActivity, "크레딧이 부족해요", Toast.LENGTH_LONG).show()
-              }
-              is DataService.QueryException -> {
-                Toast.makeText(this@NewPromiseActivity, "요청 서버 오류", Toast.LENGTH_LONG).show()
-              }
-              is NewPromiseViewModel.PhoneNotFoundException -> {
-                Toast.makeText(this@NewPromiseActivity, "핸드폰 번호 요청 오류", Toast.LENGTH_LONG).show()
-              }
-            }
-            it.printStackTrace()
-          },
-          onComplete = {
-            dialog?.dismiss()
-          }
-        )
-      }
+          confirmPromise(id)
+        },
+        onError = {
+          it.printStackTrace()
+        },
+        onComplete = {
+          dialog?.dismiss()
+        }
+      )
     }
+  }
+
+  private fun showDateTimePicker(option: Int, callback: DateTimePicker.Callback) {
+    val calendarPickerFragment = DateTimePicker()
+    calendarPickerFragment.setCallback(callback)
+    val optionsPair = getOptions(option)
+
+    if (!optionsPair.first) {
+      Toast.makeText(
+        this@NewPromiseActivity,
+        R.string.error_message_datetime_select,
+        Toast.LENGTH_SHORT
+      ).show()
+      return
+    }
+
+    val bundle = Bundle()
+    bundle.putParcelable("SUBLIME_OPTIONS", optionsPair.second)
+    calendarPickerFragment.arguments = bundle
+    calendarPickerFragment.setStyle(DialogFragment.STYLE_NO_TITLE, 0)
+    calendarPickerFragment.show(supportFragmentManager, "SUBLIME_PICKER")
   }
 
   private fun notify(isEdit: Boolean, contacts: List<String>) {
@@ -336,15 +328,16 @@ class NewPromiseActivity : BaseActivity() {
     finish()
   }
 
-  private fun getOptions(): Pair<Boolean, SublimeOptions> {
+  private fun getOptions(option: Int): Pair<Boolean, SublimeOptions> {
     val options = SublimeOptions()
-    val displayOptions = SublimeOptions.ACTIVATE_DATE_PICKER or SublimeOptions.ACTIVATE_TIME_PICKER
 
-    options.pickerToShow = SublimeOptions.Picker.DATE_PICKER
-    options.setDisplayOptions(displayOptions)
+    options.pickerToShow =
+      if (option == SublimeOptions.ACTIVATE_DATE_PICKER) SublimeOptions.Picker.DATE_PICKER
+      else SublimeOptions.Picker.TIME_PICKER
+    options.setDisplayOptions(option)
     options.setCanPickDateRange(false)
 
-    return Pair(displayOptions != 0, options)
+    return Pair(option != 0, options)
   }
 
   inner class SelectedMembersRecyclerViewAdapter
