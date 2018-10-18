@@ -36,6 +36,7 @@ class PromiseDetailMapFragment : BaseFragment() {
   private var promiseName = ""
   private var placeInfo: PlaceInfo? = null
   private var contactList = listOf<BatchGetCatchUpContactsQuery.BatchGetCatchUpContact>()
+  private var userPhone = ""
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     val view = inflater.inflate(R.layout.fragment_promise_detail_map, container, false)
@@ -57,6 +58,11 @@ class PromiseDetailMapFragment : BaseFragment() {
     }
 
     return view
+  }
+
+  fun updateUserLocation(phone: String, latitude: Double, longitude: Double) {
+    userPhone = phone
+    currentMemberMarkers[phone]?.position = LatLng(latitude, longitude)
   }
 
   fun updateDestination(name: String, place: PlaceInfo?) {
@@ -90,6 +96,7 @@ class PromiseDetailMapFragment : BaseFragment() {
             createMarker(name, "", latitude, longitude)
           )
         } else {
+          if (userPhone.isNotEmpty() && userPhone.equals(phone)) return@forEach
           currentMemberMarkers[phone]?.position = LatLng(latitude, longitude)
         }
       }
@@ -97,9 +104,11 @@ class PromiseDetailMapFragment : BaseFragment() {
   }
 
   private fun setDestination(markerOptions: MarkerOptions) {
-    destinationMarker = googleMap?.addMarker(markerOptions)
-    googleMap?.moveCamera(CameraUpdateFactory.newLatLng(markerOptions.position))
-    googleMap?.animateCamera(CameraUpdateFactory.zoomTo(10f))
+    if (destinationMarker == null) {
+      destinationMarker = googleMap?.addMarker(markerOptions)
+      googleMap?.moveCamera(CameraUpdateFactory.newLatLng(markerOptions.position))
+      googleMap?.animateCamera(CameraUpdateFactory.zoomTo(15f))
+    }
   }
 
   private fun setCurrentMemberMarker(phone: String, imagePath: String, markerOptions: MarkerOptions) {

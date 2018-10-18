@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat
 import android.util.Log
 import blackburn.io.catchup.service.app.DataService
 import blackburn.io.catchup.service.app.SharedPrefService
+import blackburn.io.catchup.ui.detail.PromiseDetailActivity
 import com.google.android.gms.location.*
 import dagger.android.DaggerService
 import io.reactivex.disposables.CompositeDisposable
@@ -72,9 +73,15 @@ class LocationTrackingService: DaggerService() {
 ////    val availableAt = current - 7200000L
 //
 //    if (current < closestTime - 7200000L) return
-//
+
     location?.let { location ->
       if (prefService.phone.isNotEmpty()) {
+        val intent = Intent(PromiseDetailActivity.LOCATION_UPDATE)
+        intent.putExtra("phone", prefService.phone)
+        intent.putExtra("latitude", location.latitude)
+        intent.putExtra("longitude", location.longitude)
+        sendBroadcast(intent)
+
         compositeDisposable += dataService.relocateContact(prefService.phone, location.latitude, location.longitude)
           .subscribeBy(
             onNext = {

@@ -42,6 +42,8 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
     location = intent.getStringExtra("location")
     members = intent.getStringExtra("members")
     isEdit = intent.getBooleanExtra("isEdit", false)
+    val id = intent.getStringExtra("id")
+
     promiseConfirmTitleTextView.text = resources.getString(
       if (isEdit) R.string.promise_confirm_title_edit else R.string.promise_confirm_title_add
     )
@@ -70,6 +72,8 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
               ButtonObject("앱에서 보기", LinkObject.newBuilder()
                 .setWebUrl(appUrl)
                 .setMobileWebUrl(appUrl)
+                .setAndroidExecutionParams("param1=$id")
+                .setIosExecutionParams("param1=$id")
                 .build()))
             .setAddressTitle(name)
             .build()

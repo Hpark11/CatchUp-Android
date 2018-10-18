@@ -132,7 +132,11 @@ class EntranceActivity: BaseActivity() {
           if (!isNecessaryPermissionsGranted) return
 
           val phoneMgr = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-          val phone = phoneMgr.line1Number?.replace("[^0-9]".toRegex(), "") ?: ""
+          var phone = phoneMgr.line1Number?.replace("[^0-9]".toRegex(), "") ?: ""
+          if (phone.startsWith("82")) {
+            phone = phone.removePrefix("82")
+            phone = "0$phone"
+          }
 
           FirebaseInstanceId.getInstance().instanceId
             .addOnSuccessListener {

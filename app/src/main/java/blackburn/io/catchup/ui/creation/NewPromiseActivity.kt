@@ -56,7 +56,7 @@ class NewPromiseActivity : BaseActivity() {
     override fun onCancelled() {}
 
     override fun onDateTimeRecurrenceSet(
-      selectedDate: SelectedDate,
+      selectedDate: SelectedDate?,
       hourOfDay: Int,
       minute: Int,
       recurrenceOption: SublimeRecurrencePicker.RecurrenceOption,
@@ -79,15 +79,15 @@ class NewPromiseActivity : BaseActivity() {
     override fun onCancelled() {}
 
     override fun onDateTimeRecurrenceSet(
-      selectedDate: SelectedDate,
+      selectedDate: SelectedDate?,
       hourOfDay: Int,
       minute: Int,
       recurrenceOption: SublimeRecurrencePicker.RecurrenceOption,
       recurrenceRule: String?
     ) {
 
-      calendar = selectedDate.firstDate
-      showDateTimePicker(SublimeOptions.ACTIVATE_DATE_PICKER, timeSelectedCallback)
+      calendar = selectedDate?.firstDate ?: Calendar.getInstance()
+      showDateTimePicker(SublimeOptions.ACTIVATE_TIME_PICKER, timeSelectedCallback)
     }
   }
 
@@ -176,8 +176,8 @@ class NewPromiseActivity : BaseActivity() {
         onSuccess = { data ->
           data.updateCatchUpPromise()?.let { promise ->
             notify(id != null, promise.contacts() ?: listOf())
+            confirmPromise(id != null, promise.id())
           }
-          confirmPromise(id)
         },
         onError = {
           it.printStackTrace()
@@ -310,16 +310,16 @@ class NewPromiseActivity : BaseActivity() {
     }
   }
 
-  private fun confirmPromise(id: String = "") {
+  private fun confirmPromise(isEdit: Boolean, id: String = "") {
     val options = ActivityOptions.makeSceneTransitionAnimation(this)
     val intent = Intent(this@NewPromiseActivity, PromiseConfirmActivity::class.java)
-    val isEdit = id.isNotEmpty()
 
     intent.putExtra("isEdit", isEdit)
     intent.putExtra("name", promiseNameInputView.text)
     intent.putExtra("dateTime", promiseDateInputView.text)
     intent.putExtra("location", promiseAddressInputView.text)
     intent.putExtra("members", promiseMemberInputView.text)
+    intent.putExtra("id", id)
     startActivity(intent, options.toBundle())
 
     val resultIntent = Intent()

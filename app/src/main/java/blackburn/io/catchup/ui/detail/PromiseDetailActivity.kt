@@ -25,10 +25,15 @@ import blackburn.io.catchup.app.util.setStatusBarContentColor
 import blackburn.io.catchup.model.PlaceInfo
 import com.amazonaws.util.DateUtils
 import java.text.SimpleDateFormat
+import android.content.BroadcastReceiver
+import android.content.IntentFilter
+
+
 
 class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
   companion object {
-    val RESULT_CODE_PROMISE_EDIT_OCCURRED = 9942
+    const val RESULT_CODE_PROMISE_EDIT_OCCURRED = 9942
+    const val LOCATION_UPDATE = "blackburn.io.catchup.ui.detail.location"
   }
 
   enum class DisplayType {
@@ -43,6 +48,7 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
   lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
   private lateinit var viewModel: PromiseDetailViewModel
+  private var receiver: BroadcastReceiver? = null
 
   override fun supportFragmentInjector(): AndroidInjector<Fragment> {
     return fragmentInjector
@@ -201,6 +207,40 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
       setResult(RESULT_CODE_PROMISE_EDIT_OCCURRED)
     }
     finish()
+  }
+
+  private fun registerReceiver() {
+    if (receiver != null) return
+
+    val theFilter = IntentFilter()
+    theFilter.addAction(LOCATION_UPDATE)
+
+    receiver = object : BroadcastReceiver() {
+      override fun onReceive(context: Context, intent: Intent) {
+        val phone = intent.getStringExtra("phone")
+        val latitude = intent.getDoubleExtra("latitude", 0.0)
+        val longitude = intent.getDoubleExtra("longitude", 0.0)
+
+        if (intent.action == LOCATION_UPDATE) {
+          promiseDetailMapFragment.updateUserLocation(phone, latitude, longitude)
+        }
+      }
+    }
+
+    this.registerReceiver(receiver, theFilter)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    registerReceiver()
+  }
+
+  override fun onPause() {
+    super.onPause()
+    if(receiver != null){
+      unregisterReceiver(receiver)
+      receiver = null;
+    }
   }
 
   override fun onBackPressed() {
