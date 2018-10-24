@@ -11,7 +11,6 @@ import android.view.View
 import android.widget.Toast
 import blackburn.io.catchup.R
 import blackburn.io.catchup.app.BaseActivity
-import blackburn.io.catchup.app.Define
 import blackburn.io.catchup.ui.creation.NewPromiseActivity
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -27,8 +26,6 @@ import com.amazonaws.util.DateUtils
 import java.text.SimpleDateFormat
 import android.content.BroadcastReceiver
 import android.content.IntentFilter
-
-
 
 class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
   companion object {
@@ -148,7 +145,7 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
       val parsedDateTime = DateUtils.parseISO8601Date(dateTime)
       val current = Calendar.getInstance().timeInMillis
 
-      if (current >= (parsedDateTime.time - Define.ACTIVATE_PERIOD) && current <= parsedDateTime.time) {
+      if (parsedDateTime.time + 3600000 >= current && parsedDateTime.time - 7200000 <= current) {
         promiseDetailMapFragment.updateContacts(contacts ?: listOf())
       } else {
         Toast.makeText(

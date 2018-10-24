@@ -86,17 +86,6 @@ mutation UpdateCatchUpContact($phone: ID!, $contact: ContactUpdateInput!) {
     osType
   }
 }
-mutation BatchCreateCatchUpContact($contacts: [ContactCreateInput]) {
-  batchCreateCatchUpContact(contacts: $contacts) {
-    phone
-    nickname
-    profileImagePath
-    latitude
-    longitude
-    pushToken
-    osType
-  }
-}
 mutation RelocateCatchUpContact(
   $phone: ID!
   $latitude: Float!
@@ -147,6 +136,29 @@ mutation CreateCatchUpPromise($data: CatchUpPromiseInput) {
     contacts
   }
 }
+mutation DeleteCatchUpPromise($id: ID!) {
+  deleteCatchUpPromise(id: $id) {
+    id
+    owner
+    dateTime
+    address
+    latitude
+    longitude
+    name
+    contacts
+  }
+}
+mutation BatchCreateCatchUpContact($contacts: [ContactCreateInput]) {
+  batchCreateCatchUpContact(contacts: $contacts) {
+    phone
+    nickname
+    profileImagePath
+    latitude
+    longitude
+    pushToken
+    osType
+  }
+}
 mutation UpdateCatchUpPromise($id: ID!, $data: CatchUpPromiseInput) {
   updateCatchUpPromise(id: $id, data: $data) {
     id
@@ -159,8 +171,20 @@ mutation UpdateCatchUpPromise($id: ID!, $data: CatchUpPromiseInput) {
     contacts
   }
 }
-mutation DeleteCatchUpPromise($id: ID!) {
-  deleteCatchUpPromise(id: $id) {
+mutation AddContactIntoPromise($id: ID!, $phone: String!) {
+  addContactIntoPromise(id: $id, phone: $phone) {
+    id
+    owner
+    dateTime
+    address
+    latitude
+    longitude
+    name
+    contacts
+  }
+}
+mutation RemoveContactIntoPromise($id: ID!, $phone: String!) {
+  removeContactIntoPromise(id: $id, phone: $phone) {
     id
     owner
     dateTime

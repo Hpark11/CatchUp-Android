@@ -13,10 +13,7 @@ import blackburn.io.catchup.app.util.setStatusBarContentColor
 import com.afollestad.materialdialogs.MaterialDialog
 import com.kakao.kakaolink.v2.KakaoLinkResponse
 import com.kakao.kakaolink.v2.KakaoLinkService
-import com.kakao.message.template.ButtonObject
-import com.kakao.message.template.ContentObject
-import com.kakao.message.template.LinkObject
-import com.kakao.message.template.LocationTemplate
+import com.kakao.message.template.*
 import com.kakao.network.ErrorResult
 import com.kakao.network.callback.ResponseCallback
 import kotlinx.android.synthetic.main.activity_promise_confirm.*
@@ -60,13 +57,15 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
         .onPositive { dialog, which ->
 
           val params = LocationTemplate.newBuilder(location,
-            ContentObject.newBuilder("테스트",
+            ContentObject.newBuilder(name,
               "http://www.kakaocorp.com/images/logo/og_daumkakao_151001.png",
               LinkObject.newBuilder()
                 .setWebUrl(appUrl)
                 .setMobileWebUrl(appUrl)
+                .setAndroidExecutionParams("param1=$id")
+                .setIosExecutionParams("param1=$id")
                 .build())
-              .setDescrption(members)
+              .setDescrption("일시: $dateTime\n장소: $location")
               .build())
             .addButton(
               ButtonObject("앱에서 보기", LinkObject.newBuilder()
@@ -90,7 +89,6 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
               }
 
               override fun onSuccess(result: KakaoLinkResponse) {
-
               }
             })
 

@@ -46,6 +46,7 @@ class MemberSelectViewModel @Inject constructor(
 
             contacts.forEach { singleContact ->
               singleContact?.phone()?.let { phone ->
+
                 var contact = strongRealm.where(Contact::class.java)
                   .equalTo("phone", phone)
                   .findFirst()

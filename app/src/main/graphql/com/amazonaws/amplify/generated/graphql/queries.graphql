@@ -15,18 +15,6 @@ query ListCatchUpUser($count: Int, $nextToken: String) {
     nextToken
   }
 }
-query ListCatchUpPromisesByContact($contact: String!) {
-  listCatchUpPromisesByContact(contact: $contact) {
-    id
-    owner
-    dateTime
-    address
-    latitude
-    longitude
-    name
-    contacts
-  }
-}
 query GetCatchUpUser($id: ID!) {
   getCatchUpUser(id: $id) {
     id
@@ -38,17 +26,6 @@ query GetCatchUpUser($id: ID!) {
     ageRange
     phone
     credit
-  }
-}
-query BatchGetCatchUpContacts($ids: [ID]) {
-  batchGetCatchUpContacts(ids: $ids) {
-    phone
-    nickname
-    profileImagePath
-    latitude
-    longitude
-    pushToken
-    osType
   }
 }
 query GetCatchUpContact($phone: ID) {
@@ -80,5 +57,31 @@ query CheckAppVersion($platform: ID!) {
     major
     minor
     revision
+  }
+}
+query SendPush($token: String!) {
+  sendPush(token: $token)
+}
+query BatchGetCatchUpContacts($ids: [ID]) {
+  batchGetCatchUpContacts(ids: $ids) {
+    phone
+    nickname
+    profileImagePath
+    latitude
+    longitude
+    pushToken
+    osType
+  }
+}
+query ListCatchUpPromisesByContact($contact: String!) {
+  listCatchUpPromisesByContact(contact: $contact) {
+    id
+    owner
+    dateTime
+    address
+    latitude
+    longitude
+    name
+    contacts
   }
 }

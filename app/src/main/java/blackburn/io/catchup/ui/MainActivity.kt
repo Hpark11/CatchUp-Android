@@ -25,6 +25,7 @@ import blackburn.io.catchup.app.util.plusAssign
 import blackburn.io.catchup.di.module.GlideApp
 import blackburn.io.catchup.model.AppVersion
 import blackburn.io.catchup.service.android.LocationTrackingService
+import blackburn.io.catchup.service.app.SharedPrefService
 import blackburn.io.catchup.ui.common.MonthPicker
 import blackburn.io.catchup.ui.creation.NewPromiseActivity
 import blackburn.io.catchup.ui.detail.PromiseDetailActivity
@@ -51,6 +52,9 @@ class MainActivity : BaseActivity(), RewardedVideoAdListener {
   @Inject
   lateinit var viewModelFactory: ViewModelProvider.Factory
 
+  @Inject
+  lateinit var sharedPrefService: SharedPrefService
+
   private lateinit var viewModel: MainViewModel
 
   private var monthPicker: MonthPicker? = null
@@ -73,7 +77,7 @@ class MainActivity : BaseActivity(), RewardedVideoAdListener {
     viewModel = ViewModelProviders.of(this, viewModelFactory)[MainViewModel::class.java]
     bindViewModel()
 
-    val phone = intent.getStringExtra("phone")
+    val phone = sharedPrefService.phone
     formatCurrent(current)
 
     promisesRecyclerView.adapter = PromisesRecyclerViewAdapter(phone)
@@ -81,7 +85,7 @@ class MainActivity : BaseActivity(), RewardedVideoAdListener {
 
     addPromiseButton.setOnClickListener {
       val intent = Intent(this, NewPromiseActivity::class.java)
-      intent.putExtra("phone", intent.getStringExtra("phone"))
+      intent.putExtra("phone", phone)
       startActivityForResult(intent, 100)
     }
 
@@ -218,7 +222,7 @@ class MainActivity : BaseActivity(), RewardedVideoAdListener {
       val current = Calendar.getInstance()
       promiseList = list.sortedBy {
         val timestamp = DateUtils.parseISO8601Date(it.dateTime()).time
-        return@sortedBy if (timestamp > current.timeInMillis) timestamp else timestamp * 2
+        return@sortedBy if (timestamp + 3600000 > current.timeInMillis) timestamp else timestamp * 2
       }
       notifyDataSetChanged()
     }

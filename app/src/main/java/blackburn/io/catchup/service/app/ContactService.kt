@@ -1,10 +1,10 @@
 package blackburn.io.catchup.service.app
 
 import android.content.Context
+import android.net.Uri
 import android.provider.ContactsContract
 import blackburn.io.catchup.model.Contact
 import blackburn.io.catchup.di.scope.AppScope
-import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -33,6 +33,14 @@ class ContactService @Inject constructor(
         null
       )
 
+      val cursorSim = appContext.contentResolver.query(
+        Uri.parse("content://icc/adn"),
+        null,
+        null,
+        null,
+        null
+      )
+
       try {
         val contactIdIdx = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone._ID)
         val nameIdx = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
@@ -43,7 +51,7 @@ class ContactService @Inject constructor(
         do {
           val id = cursor.getString(contactIdIdx)
           val nickname = cursor.getString(nameIdx)
-          val phone = cursor.getString(phoneNumberIdx).replace("[^0-9]".toRegex(), "")
+          val phone = eraseKoreaCode(cursor.getString(phoneNumberIdx))
 
           realm.executeTransactionAsync { strongRealm ->
             strongRealm.insertOrUpdate(
@@ -51,6 +59,31 @@ class ContactService @Inject constructor(
             )
           }
         } while (cursor.moveToNext())
+
+
+        var simPhoneName: String? = null
+        var simPhoneNo: String? = null
+
+        val contactSimIdIdx = cursorSim.getColumnIndex("name")
+        val contactNameIdx = cursorSim.getColumnIndex("number")
+
+        while (cursorSim.moveToNext()) {
+          simPhoneName = cursorSim.getString(contactSimIdIdx)
+          simPhoneName = simPhoneName?.replace("|", "")
+
+          simPhoneNo = cursorSim.getString(contactNameIdx)
+          simPhoneNo = simPhoneNo?.replace("\\D".toRegex(), "")
+          simPhoneNo = simPhoneNo?.replace("&".toRegex(), "")
+
+          val phone = eraseKoreaCode(simPhoneNo ?: "")
+          val nickname = simPhoneName ?: ""
+
+          realm.executeTransactionAsync { strongRealm ->
+            strongRealm.insertOrUpdate(
+              Contact(phone, nickname, "", "", "")
+            )
+          }
+        }
 
       } catch (e: Exception) {
         if (!emitter.isDisposed) emitter.onError(e)
@@ -61,5 +94,14 @@ class ContactService @Inject constructor(
         realm?.close()
       }
     }
+  }
+
+  private fun eraseKoreaCode(phoneNumber: String): String {
+    var phone = phoneNumber.replace("[^0-9]".toRegex(), "")
+    if (phone.startsWith("82")) {
+      phone = phone.removePrefix("82")
+      phone = "0$phone"
+    }
+    return phone
   }
 }

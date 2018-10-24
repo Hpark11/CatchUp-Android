@@ -57,9 +57,6 @@ class EntranceActivity: BaseActivity() {
 
     sessionCallback = SessionCallback()
     Session.getCurrentSession().addCallback(sessionCallback)
-    if (!Session.getCurrentSession().checkAndImplicitOpen()) {
-      loginButton.visibility = View.VISIBLE
-    }
 
     try {
       val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
@@ -78,6 +75,10 @@ class EntranceActivity: BaseActivity() {
 
   override fun onResume() {
     super.onResume()
+    if (!Session.getCurrentSession().checkAndImplicitOpen()) {
+      loginButton.visibility = View.VISIBLE
+    }
+
     if (!isNecessaryPermissionsGranted) {
       val options = ActivityOptions.makeSceneTransitionAnimation(this)
       val intent = Intent(this@EntranceActivity, PermissionsActivity::class.java)
