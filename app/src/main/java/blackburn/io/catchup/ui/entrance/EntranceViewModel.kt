@@ -18,12 +18,7 @@ class EntranceViewModel @Inject constructor(
   private val pref: SharedPrefService
 ) : BaseViewModel() {
 
-  // Output
   val initDoneWithPhone: MutableLiveData<String> = MutableLiveData()
-
-  // Input
-
-  // Action
 
   fun updateCatchUpUser(
     id: String,

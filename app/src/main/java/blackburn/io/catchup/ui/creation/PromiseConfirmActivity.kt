@@ -23,7 +23,6 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
   private var name: String = ""
   private var dateTime: String = ""
   private var location: String = ""
-  private var members: String = ""
   private var isEdit: Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +36,6 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
     name = intent.getStringExtra("name")
     dateTime = intent.getStringExtra("dateTime")
     location = intent.getStringExtra("location")
-    members = intent.getStringExtra("members")
     isEdit = intent.getBooleanExtra("isEdit", false)
     val id = intent.getStringExtra("id")
 
@@ -47,7 +45,6 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
 
     promiseDateTimeTextView.text = dateTime
     promiseLocationTextView.text = location
-    promiseMembersTextView.text = members
     val appUrl = "${Define.APP_MARKET_URL}$packageName"
 
     promiseConfirmButton.setOnClickListener {
@@ -62,8 +59,8 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
               LinkObject.newBuilder()
                 .setWebUrl(appUrl)
                 .setMobileWebUrl(appUrl)
-                .setAndroidExecutionParams("param1=$id")
-                .setIosExecutionParams("param1=$id")
+                .setAndroidExecutionParams("param1=$id&param2=$name")
+                .setIosExecutionParams("param1=$id&param2=$name")
                 .build())
               .setDescrption("일시: $dateTime\n장소: $location")
               .build())
@@ -71,8 +68,8 @@ class PromiseConfirmActivity: BaseWithoutDIActivity() {
               ButtonObject("앱에서 보기", LinkObject.newBuilder()
                 .setWebUrl(appUrl)
                 .setMobileWebUrl(appUrl)
-                .setAndroidExecutionParams("param1=$id")
-                .setIosExecutionParams("param1=$id")
+                .setAndroidExecutionParams("param1=$id&param2=$name")
+                .setIosExecutionParams("param1=$id$&param2=$name")
                 .build()))
             .setAddressTitle(name)
             .build()

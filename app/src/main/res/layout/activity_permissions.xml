@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,9 +10,9 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="72dp"
+        android:layout_marginEnd="8dp"
         android:text="@string/permission_title"
         android:textColor="@color/slate"
         android:textSize="17sp"
@@ -38,9 +37,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_gravity="left"
             android:layout_marginBottom="14dp"
-            android:layout_gravity="left">
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -51,8 +50,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="위치정보"
-                android:layout_gravity="center"
                 android:textColor="@color/slate"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -61,69 +60,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
             android:text="모임 약속 두시간 전부터 친구들의 위치를 서로 파악하기 위해 필요해요 \n(약속 시간이 2시간 미만인 경우에는 위치정보를 조회하지 않아요) "
-            android:textColor="@color/steel"
-            android:textSize="14sp"
-            android:layout_marginBottom="24dp"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="14dp"
-            android:layout_gravity="left">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/space_mid"
-                android:src="@drawable/icon_check" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="전화번호부"
-                android:layout_gravity="center"
-                android:textColor="@color/slate"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="친구들과의 모임 약속을 만들어 활용하기 위해 저장되어있는 그들의 연락처들이 필요해요"
-            android:textColor="@color/steel"
-            android:textSize="14sp"
-            android:layout_marginBottom="24dp"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="14dp"
-            android:layout_gravity="left">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/space_mid"
-                android:src="@drawable/icon_check" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="내 전화번호"
-                android:layout_gravity="center"
-                android:textColor="@color/slate"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="친구들이 나를 알아보고 약속모임을 만들 수 있게 내 전화번호가 필요해요"
             android:textColor="@color/steel"
             android:textSize="14sp" />
     </LinearLayout>

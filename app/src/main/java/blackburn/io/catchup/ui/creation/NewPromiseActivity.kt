@@ -104,17 +104,6 @@ class NewPromiseActivity : BaseActivity() {
       newPromiseConfirmButton.background = resources.getDrawable(R.drawable.btn_modify)
     }
 
-    selectedMembersRecyclerView.apply {
-      layoutManager = GridLayoutManager(
-        this@NewPromiseActivity,
-        1,
-        GridLayoutManager.HORIZONTAL,
-        false
-      )
-
-      adapter = SelectedMembersRecyclerViewAdapter()
-    }
-
     newPromiseActionBar.setFirstLeftButtonClickListener(View.OnClickListener {
       finish()
     })
@@ -139,12 +128,6 @@ class NewPromiseActivity : BaseActivity() {
       startActivityForResult(Intent(this, MapSearchActivity::class.java), 0)
     }
 
-    promiseMemberInputView.setOnClickListener {
-      val intent = Intent(this, MemberSelectActivity::class.java)
-      intent.putExtra("selected", ArrayList(contacts))
-      startActivityForResult(intent, 0)
-    }
-
     newPromiseConfirmButton.setOnClickListener { view ->
       dialog = SpotsDialog.Builder().setContext(this@NewPromiseActivity).build()
 
@@ -159,10 +142,6 @@ class NewPromiseActivity : BaseActivity() {
 
       if (viewModel.placeInfo.value == null) {
         reasons.add("장소")
-      }
-
-      if (contacts.isEmpty()) {
-        reasons.add("멤버")
       }
 
       if (reasons.isNotEmpty()) {
@@ -255,36 +234,6 @@ class NewPromiseActivity : BaseActivity() {
         )
       }
     })
-
-    viewModel.contacts.observe(this, Observer {
-      contacts = it ?: listOf()
-
-      if (contacts.isNotEmpty()) {
-        viewModel.loadSingleContact(contacts.first())?.let { contactFlowable ->
-          disposable += contactFlowable.subscribeBy(
-            onNext = { contact ->
-              val input = if (contacts.size == 1) contact.nickname
-              else "${contact.nickname}외 ${contacts.size - 1}명"
-
-              promiseMemberInputView.setupView(
-                PromiseInputView.InputState.APPLIED,
-                input
-              )
-            },
-            onError = {
-              it.printStackTrace()
-            }
-          )
-        }
-      } else {
-        promiseMemberInputView.setupView(
-          PromiseInputView.InputState.SEARCH,
-          "구성원을 검색해주세요"
-        )
-      }
-
-      selectedMembersRecyclerView.adapter.notifyDataSetChanged()
-    })
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -302,11 +251,6 @@ class NewPromiseActivity : BaseActivity() {
           )
         }
       }
-      MemberSelectActivity.RESULT_CODE_SELECTED -> {
-        data?.let {
-          viewModel.contactsInput.onNext(it.getStringArrayExtra("selected").toList())
-        }
-      }
     }
   }
 
@@ -318,7 +262,6 @@ class NewPromiseActivity : BaseActivity() {
     intent.putExtra("name", promiseNameInputView.text)
     intent.putExtra("dateTime", promiseDateInputView.text)
     intent.putExtra("location", promiseAddressInputView.text)
-    intent.putExtra("members", promiseMemberInputView.text)
     intent.putExtra("id", id)
     startActivity(intent, options.toBundle())
 

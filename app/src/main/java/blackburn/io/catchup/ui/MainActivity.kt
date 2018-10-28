@@ -100,7 +100,6 @@ class MainActivity : BaseActivity(), RewardedVideoAdListener {
 
     if (isGooglePlayServicesAvailable()) {
       if (!isServiceRunning) {
-//        stopService(Intent())
         val intent = Intent(this@MainActivity, LocationTrackingService::class.java)
         startService(intent)
         isServiceRunning = true
@@ -208,10 +207,8 @@ class MainActivity : BaseActivity(), RewardedVideoAdListener {
   }
 
   private fun loadRewardedVideoAd() {
-    // ca-app-pub-1670879929355255/3786261338
     ad.loadAd("ca-app-pub-3940256099942544/5224354917", AdRequest.Builder().build())
   }
-
 
   private inner class PromisesRecyclerViewAdapter(
     private val currentUserPhone: String
@@ -285,8 +282,7 @@ class MainActivity : BaseActivity(), RewardedVideoAdListener {
         }
 
         itemView.membersRecyclerView.apply {
-          adapter = MembersRecyclerViewAdapter(promise.contacts()?.filter { !it.equals(currentUserPhone) }
-            ?: listOf())
+          adapter = MembersRecyclerViewAdapter(promise.contacts() ?: listOf())
           layoutManager = GridLayoutManager(itemView.context, 1, GridLayoutManager.HORIZONTAL, false)
         }
       }
@@ -343,7 +339,6 @@ class MainActivity : BaseActivity(), RewardedVideoAdListener {
   override fun onRewarded(reward: RewardItem) {
     Toast.makeText(this, "onRewarded! currency: ${reward.type} amount: ${reward.amount}",
       Toast.LENGTH_SHORT).show()
-    // Reward the user.
   }
 
   override fun onRewardedVideoAdLeftApplication() {

@@ -43,9 +43,7 @@ class EntranceActivity: BaseActivity() {
   private lateinit var viewModel: EntranceViewModel
 
   private val isNecessaryPermissionsGranted
-    get() = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED &&
-      ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED &&
-      ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+    get() = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
       ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -132,23 +130,16 @@ class EntranceActivity: BaseActivity() {
         override fun onSuccess(response: MeV2Response) {
           if (!isNecessaryPermissionsGranted) return
 
-          val phoneMgr = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-          var phone = phoneMgr.line1Number?.replace("[^0-9]".toRegex(), "") ?: ""
-          if (phone.startsWith("82")) {
-            phone = phone.removePrefix("82")
-            phone = "0$phone"
-          }
-
           FirebaseInstanceId.getInstance().instanceId
             .addOnSuccessListener {
-              viewModel.attachToken(phone, it.token)
+              viewModel.attachToken("${response.id}", it.token)
             }.addOnFailureListener {
               it.printStackTrace()
             }
 
           viewModel.updateCatchUpUser(
             "${response.id}",
-            phone,
+            "${response.id}",
             response.kakaoAccount.email,
             response.nickname,
             response.profileImagePath,

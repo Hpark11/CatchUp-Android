@@ -37,18 +37,15 @@ class NewPromiseViewModel @Inject constructor(
   val name: MutableLiveData<String> = MutableLiveData()
   val placeInfo: MutableLiveData<PlaceInfo> = MutableLiveData()
   val dateTime: MutableLiveData<Date> = MutableLiveData()
-  val contacts: MutableLiveData<List<String>> = MutableLiveData()
 
   val nameInput: PublishSubject<String> = PublishSubject.create()
   val placeInput: PublishSubject<PlaceInfo> = PublishSubject.create()
   val dateTimeInput: PublishSubject<Date> = PublishSubject.create()
-  val contactsInput: PublishSubject<List<String>> = PublishSubject.create()
 
   init {
     compositeDisposable += nameInput.subscribe { name.value = it }
     compositeDisposable += placeInput.subscribe { placeInfo.value = it }
     compositeDisposable += dateTimeInput.subscribe { dateTime.value = it }
-    compositeDisposable += contactsInput.subscribe { contacts.value = it }
   }
 
   fun loadSingleContact(phone: String): Flowable<Contact>? {
@@ -62,7 +59,6 @@ class NewPromiseViewModel @Inject constructor(
           promise.name()?.let { nameInput.onNext(it) }
 
           promise.dateTime()?.let { dateTimeInput.onNext(DateUtils.parseISO8601Date(it)) }
-          promise.contacts()?.filterNot { it.equals(pref.phone) }.let { contactsInput.onNext(it ?: listOf()) }
 
           val address = promise.address()
           val lat = promise.latitude()
@@ -86,54 +82,38 @@ class NewPromiseViewModel @Inject constructor(
     val place = placeInfo.value ?: PlaceInfo("None", 0.0, 0.0)
 
     return Maybe.create { emitter ->
-      compositeDisposable += data.requestContacts(
-        contacts.value ?: listOf(),
-        AppSyncResponseFetchers.NETWORK_ONLY
-      ).map { response ->
-        val registered = response.data()?.batchGetCatchUpContacts()?.mapNotNull {
-          it.phone()
-        }?.toSet() ?: setOf()
+      val phone = pref.phone
+      val contacts = listOf(phone)
 
-        return@map contacts.value?.filterNot { registered.contains(it) }
+      if (phone.isEmpty()) {
+        throw PhoneNotFoundException("Invalid PhoneNumber")
+      } else {
 
-      }.compose(scheduler.forObservable()).switchMap { unregisteredUsers ->
-        return@switchMap data.batchCreateContacts(
-          unregisteredUsers, unregisteredUsers.map { "미가입자" }
-        )
-      }.compose(scheduler.forObservable()).switchMap { response ->
-        val phone = pref.phone
-        val contacts = (contacts.value ?: listOf()) + listOf(pref.phone)
-
-        if (phone.isEmpty()) {
-          throw PhoneNotFoundException("Invalid PhoneNumber")
-        } else {
-
-          return@switchMap data.updatePromise(
-            id ?: UUID.randomUUID().toString(),
-            phone,
-            name,
-            DateUtils.formatISO8601Date(dateTime.value),
-            place.address,
-            place.latitude,
-            place.longitude,
-            contacts
-          )
-        }
-      }.subscribeBy(
-        onNext = { response ->
-          if (!emitter.isDisposed) {
-            response.data()?.let { data ->
-              emitter.onSuccess(data)
-            }.let {
-              if (!emitter.isDisposed) emitter.onError(DataService.QueryException("No Data"))
+        compositeDisposable += data.updatePromise(
+          id ?: UUID.randomUUID().toString(),
+          phone,
+          name,
+          DateUtils.format(DateUtils.ALTERNATE_ISO8601_DATE_PATTERN, dateTime.value),
+          place.address,
+          place.latitude,
+          place.longitude,
+          contacts
+        ).subscribeBy(
+          onNext = { response ->
+            if (!emitter.isDisposed) {
+              response.data()?.let { data ->
+                emitter.onSuccess(data)
+              }.let {
+                if (!emitter.isDisposed) emitter.onError(DataService.QueryException("No Data"))
+              }
             }
+          },
+          onError = {
+            it.printStackTrace()
+            if (!emitter.isDisposed) emitter.onError(it)
           }
-        },
-        onError = {
-          it.printStackTrace()
-          if (!emitter.isDisposed) emitter.onError(it)
-        }
-      )
+        )
+      }
     }
   }
 

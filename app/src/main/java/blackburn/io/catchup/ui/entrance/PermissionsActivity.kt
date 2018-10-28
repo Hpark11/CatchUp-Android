@@ -22,8 +22,6 @@ class PermissionsActivity: BaseWithoutDIActivity() {
       return@switchMapSingle TedRx2Permission.with(this)
         .setDeniedMessage(R.string.permission_deny_message)
         .setPermissions(
-          Manifest.permission.READ_CONTACTS,
-          Manifest.permission.READ_PHONE_STATE,
           Manifest.permission.ACCESS_FINE_LOCATION,
           Manifest.permission.ACCESS_COARSE_LOCATION
         ).request()
