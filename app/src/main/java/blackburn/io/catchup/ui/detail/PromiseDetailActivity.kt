@@ -57,6 +57,7 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
 
   private var isEditOccurred = false
   private lateinit var id: String
+  private lateinit var task: TimerTask
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -102,9 +103,19 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
       startActivityForResult(intent, 100)
     }
 
-    promiseDetailRefreshButton.setOnClickListener { view ->
-      checkPromiseInfo()
+    task = object: TimerTask() {
+      override fun run() {
+        checkPromiseInfo()
+      }
     }
+
+    val timer = Timer()
+    timer.schedule(task, 0, 80000)
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    task.cancel()
   }
 
   private fun checkPromiseInfo() {
@@ -142,7 +153,7 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
 
     viewModel.contactList.observe(this, Observer { contacts ->
       val dateTime = intent.getStringExtra("dateTime") ?: ""
-      val parsedDateTime = DateUtils.parseISO8601Date(dateTime)
+      val parsedDateTime = DateUtils.parse(DateUtils.ALTERNATE_ISO8601_DATE_PATTERN, dateTime)
       val current = Calendar.getInstance().timeInMillis
 
       if (parsedDateTime.time + 3600000 >= current && parsedDateTime.time - 7200000 <= current) {
@@ -150,7 +161,7 @@ class PromiseDetailActivity : BaseActivity(), HasSupportFragmentInjector {
       } else {
         Toast.makeText(
           this@PromiseDetailActivity,
-          "약속 활성화 시간 (약속시간 두시간 이내)이 아니여서 친구들의 위치를 확인 할 수 없어요",
+          "약속 활성화 시간밖엔 위치정보는 볼 수 없어요",
           Toast.LENGTH_LONG
         ).show()
       }
